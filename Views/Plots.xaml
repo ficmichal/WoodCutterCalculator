@@ -1,0 +1,43 @@
+﻿<Page x:Class="WoodCutterCalculator.Views.Plots"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:WoodCutterCalculator.Views"
+      mc:Ignorable="d" 
+      d:DesignHeight="720" d:DesignWidth="1280"
+      Background="AntiqueWhite"
+      Title="Plots"
+      DataContext="{Binding Path=PlotsViewModel,Source={StaticResource Locator}}"
+      >
+
+    <Grid>
+        <oxy:Plot x:Name="plot1" 
+                  Title="Texas Instruments TMP102 Temperature Sensor" 
+                  Margin="94,10,78,10">
+            <oxy:Plot.Axes>
+                <oxy:LinearAxis Title="Sample number" 
+                                Position="Bottom" 
+                                MajorGridlineStyle="Solid" 
+                                MinorGridlineStyle="Solid" 
+                                MinimumPadding="0" 
+                                MaximumPadding="0"/>
+                <oxy:LinearAxis Title="Temperature [°C]" 
+                                Position="Left" 
+                                MajorGridlineStyle="Solid" 
+                                MinorGridlineStyle="Solid"
+                                TickStyle="Outside" />
+            </oxy:Plot.Axes>
+            <oxy:Plot.Series>
+                <oxy:LineSeries
+                    ItemsSource="{Binding Data, Mode=OneWay}"
+                    DataFieldX="XData"
+                    DataFieldY="YData"
+                    MarkerSize="3"
+                    MarkerType="Plus"
+                    />
+            </oxy:Plot.Series>
+        </oxy:Plot>
+    </Grid>
+</Page>
