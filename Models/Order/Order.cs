@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WoodCutterCalculator.Models
+namespace WoodCutterCalculator.Models.Order
 {
     public class Order
     {

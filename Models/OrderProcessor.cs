@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoodCutterCalculator.Models.Extensions;
 using WoodCutterCalculator.Models.GeneticAlgorithm;
 using WoodCutterCalculator.Models.Matlab;
 
@@ -11,6 +12,7 @@ namespace WoodCutterCalculator.Models
 {
     public class OrderProcessor
     {
+        private byte _numberOfPossibleCutsPerPlank = 9;
         public int[][] PlanksInTheWarehouse { get; set; }
         public double[] HistoryOfLearning { get; set; }
         public double BestSolution { get; set; }
@@ -42,8 +44,8 @@ namespace WoodCutterCalculator.Models
 
             for (int i = 0; i < countOfPlankPacks; i++)
             {
-                var plankpack = SplitWarehouseToPack(i, numberOfPlanksPerPack);
-                CalculateOnePackOfPlanks(plankpack, numberOfIterations);
+                var plankPack = SplitWarehouseToPack(i, numberOfPlanksPerPack);
+                CalculateOnePackOfPlanks(plankPack, numberOfIterations);
             }
 
             return new object();
@@ -57,24 +59,76 @@ namespace WoodCutterCalculator.Models
                 var bestSolutionInCurrentPopulation = FindBestSolutionInCurrentPopulation(population, packOfPlanks);
 
             }
+            return new object();
         }
         private double FindBestSolutionInCurrentPopulation(SpecimenPopulation population, int[][] packOfPlanks)
         {
+            var bestSolution = 0;
             var sizeOfPopulation = population.Population.Length;
             var sizeOfSpecimen = population.PackOfPlanks.Length;
-            for (int k = 0; k < sizeOfPopulation / sizeOfSpecimen; k++)
+            var countOfSpecimens = sizeOfPopulation / sizeOfSpecimen;
+            for (int k = 0; k < countOfSpecimens; k++)
             {
                 var specimen = SplitPopulationToSpecimens(population, k, sizeOfSpecimen);
-
+                for (int l = 0; l < packOfPlanks.Length; l++)
+                {
+                    var valueOfCuttedPlank = CalculateCuttedPlank(packOfPlanks[l], SplitSpecimenOfCutsToOnePlankCuts(specimen, l));
+                }
             }
-]
+            return 1.0;
+        }
+
+        // 1 meter plank is registered as 20 of 5 cm pieces (int[]). It can be cut every 10 cm (byte[]).
+        public double CalculateCuttedPlank(int[] plank, byte[] cuts)
+        {
+            var cuttedPlank = CutPlank(plank, cuts);
+
+            return 1.0;
+        }
+
+        public int[][] CutPlank(int[] plank, byte[] cuts)
+        {
+            int maxCuttedPieces = 10;
+            int[][] cuttedPiecesOfWood = new int[maxCuttedPieces][];
+            int index = 0;
+            int lastCutIndex = -1;
+
+            var countOfPossibleCuts = cuts.Length;
+            for (int i = 0; i < countOfPossibleCuts; i++)
+            {
+                if (cuts[i] == 1)
+                {
+                    cuttedPiecesOfWood[index] = CutPlankToStock(plank, i, lastCutIndex);
+                    lastCutIndex = i;
+                    index++;
+                }
+                if (i == countOfPossibleCuts - 1)
+                {
+                    if (cuts[i] == 1)
+                    {
+                        cuttedPiecesOfWood[index] = CutPlankToStock(plank, i, i - 1);
+                    }
+                    else
+                    {
+                        cuttedPiecesOfWood[index] = CutPlankToStock(plank, i + 1, lastCutIndex);
+                    }
+                }
+            }
+
+            return cuttedPiecesOfWood.Where(x => x?.Count() > 0).ToArray();
         }
 
         private int[][] SplitWarehouseToPack(int index, int numberOfPlanksPerPack)
-            => PlanksInTheWarehouse.Skip(index * numberOfPlanksPerPack).Take(numberOfPlanksPerPack).ToArray();
+            => PlanksInTheWarehouse.SubArray(index * numberOfPlanksPerPack, numberOfPlanksPerPack);
 
         private byte[] SplitPopulationToSpecimens(SpecimenPopulation population, int index, int sizeOfSpecimen)
-            => population.Population.Skip(index * sizeOfSpecimen).Take(sizeOfSpecimen).ToArray();
+            => population.Population.SubArray(index * sizeOfSpecimen, sizeOfSpecimen);
+
+        private byte[] SplitSpecimenOfCutsToOnePlankCuts(byte[] specimen, int index)
+            => specimen.SubArray(index * _numberOfPossibleCutsPerPlank, _numberOfPossibleCutsPerPlank);
+
+        private int[] CutPlankToStock(int[] plank, int index, int lastCutIndex)
+            => plank.SubArray(2 * (lastCutIndex + 1), 2 * (index - lastCutIndex));
 
         //private int[,] CalculateInMatlab(ICollection<int> placedOrder)
         //{
