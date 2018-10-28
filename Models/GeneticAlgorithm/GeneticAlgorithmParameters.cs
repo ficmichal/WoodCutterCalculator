@@ -13,6 +13,8 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
 
         private int _sizeOfPopulation;
         private int _numberOfPlanksPerPack;
+        private int _maxPossibleCutsPerPlank;
+        private int _coefficientOfCut;
         private int _numberOfIterations;
         private double _mutationRate;
         private double _percentageOfChildrenFromPreviousGeneration;
@@ -36,6 +38,44 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
                 }
 
                 _numberOfPlanksPerPack = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public int MaxPossibleCutsPerPlank
+        {
+            get
+            {
+                return _maxPossibleCutsPerPlank;
+            }
+
+            set
+            {
+                if (_maxPossibleCutsPerPlank == value)
+                {
+                    return;
+                }
+
+                _maxPossibleCutsPerPlank = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public int CoefficientOfCut
+        {
+            get
+            {
+                return _coefficientOfCut;
+            }
+
+            set
+            {
+                if (_coefficientOfCut == value)
+                {
+                    return;
+                }
+
+                _coefficientOfCut = value;
                 RaisePropertyChanged();
             }
         }

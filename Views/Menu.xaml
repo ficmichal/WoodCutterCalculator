@@ -12,10 +12,10 @@
     <Grid>
         <Canvas>
             <Button Command="{Binding GoToPlotsCommand}" Content="Show plots" Height="140" Canvas.Left="323" Canvas.Top="503" Width="598" Foreground="Black" FontSize="72"/>
-            <Button Command="{Binding StartCalculations}" Content="Start calculations" Height="140" Canvas.Left="323" Canvas.Top="268" Width="598" Foreground="Black" FontSize="72"/>
+            <Button Command="{Binding StartCalculations}" Content="Start calculations" Height="140" Canvas.Left="323" Canvas.Top="346" Width="598" Foreground="Black" FontSize="72"/>
             <Label Content="Please, place&#10;your order:" Foreground="Black" Height="91" Canvas.Left="47" Canvas.Top="33" Width="186" FontSize="30
                    " RenderTransformOrigin="0.5,0.5" />
-            <DataGrid x:Name="PlacedOrder" ItemsSource="{Binding PlacedOrder}"  VerticalAlignment="Top" AutoGenerateColumns="False" CanUserResizeColumns="True" Canvas.Left="304" Canvas.Top="78" Height="46" Width="792">
+            <DataGrid x:Name="PlacedOrder" ItemsSource="{Binding PlacedOrder}"  VerticalAlignment="Top" AutoGenerateColumns="False" CanUserResizeColumns="True" Canvas.Left="306" Canvas.Top="52" Height="46" Width="792">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="I class - 20cm" Binding="{Binding PlacedOrder[0]}"/>
                     <DataGridTextColumn Header="I class - 30cm" Binding="{Binding PlacedOrder[1]}"/>
@@ -39,6 +39,10 @@
             <Label Content="Mutation rate" Foreground="Black" Height="30" Canvas.Left="915" Canvas.Top="171" Width="158" FontSize="16" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding Parameters.PercentageOfChildrenFromPreviousGeneration}" Canvas.Left="1084" Canvas.Top="205" Height="31" Width="164"/>
             <Label Content="Percentage of children&#xA;from previous generation" Foreground="Black" Height="51" Canvas.Left="1078" Canvas.Top="148" Width="197" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <TextBox Text="{Binding Parameters.MaxPossibleCutsPerPlank}" Canvas.Left="323" Canvas.Top="300" Height="30" Width="164"/>
+            <Label Content="Max Possible Cuts&#xA;Per Plank" Foreground="Black" Height="51" Canvas.Left="323" Canvas.Top="242" Width="139" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <TextBox Text="{Binding Parameters.CoefficientOfCut}" Canvas.Left="707" Canvas.Top="304" Height="30" Width="164"/>
+            <Label Content="             Coefficient of cut&#xA;(minor unit stock/minor unit plank" Foreground="Black" Height="52" Canvas.Left="682" Canvas.Top="247" Width="276" FontSize="16" RenderTransformOrigin="0.5,0.5" />
         </Canvas>
     </Grid>
 </Page>

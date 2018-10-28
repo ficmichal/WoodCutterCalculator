@@ -3,35 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoodCutterCalculator.Models.Enums;
 
 namespace WoodCutterCalculator.Models.Order
 {
-    public class DetailsOfPlanks
+    public class DetailsOfStocks
     {
-        public static Dictionary<string, double> Prices()
+        public const int MultipleConst = 10;
+        public static Dictionary<StockClassEnum, double> LossesPer5Cm = new Dictionary<StockClassEnum, double>
         {
-            return new Dictionary<string, double>
-            {
-                { "40_FirstClassPlankPrice", 25.0 },
-                { "30_FirstClassPlankPrice", 17.0 },
-                { "20_FirstClassPlankPrice", 15.0 },
-                { "40_SecondClassPlankPrice", 18.0 },
-                { "30_SecondClassPlankPrice", 11.0 },
-                { "20_SecondClassPlankPrice", 10.0 },
-                { "40_ThirdClassPlankPrice", 13.0 },
-                { "30_ThirdClassPlankPrice", 7.0 },
-                { "20_ThirdClassPlankPrice", 5.0 },
-            };
-        }
+            { StockClassEnum.FirstClass, 2.0 },
+            { StockClassEnum.SecondClass, 1.0 },
+            { StockClassEnum.ThirdClass, 0.5 }
+        };
 
-        public static Dictionary<string, double> LossesPer5Cm()
+        public static Dictionary<StockDetailsEnum, double> Prices = new Dictionary<StockDetailsEnum, double>
         {
-            return new Dictionary<string, double>
-            {
-                { "FirstClassLoss", 3.0 },
-                { "SecondClassLoss", 2.0 },
-                { "ThirdClassLoss", 1.0 },
-            };
-        }
+            { StockDetailsEnum.FirstClassStock40, 35.0 },
+            { StockDetailsEnum.FirstClassStock30, 24.0 },
+            { StockDetailsEnum.FirstClassStock20, 15.0 },
+            { StockDetailsEnum.SecondClassStock40, 25.0 },
+            { StockDetailsEnum.SecondClassStock30, 18.0 },
+            { StockDetailsEnum.SecondClassStock20, 11.0 },
+            { StockDetailsEnum.ThirdClassStock40, 17.0 },
+            { StockDetailsEnum.ThirdClassStock30, 8.0 },
+            { StockDetailsEnum.ThirdClassStock20, 6.0 }
+        };
+
+        public static Dictionary<StockLengthEnum, int> MultipleMinorStockUnit = new Dictionary<StockLengthEnum, int>
+        {
+            { StockLengthEnum.Length20cm, 2 },
+            { StockLengthEnum.Length30cm, 3 },
+            { StockLengthEnum.Length40cm, 4 }
+        };
     }
 }

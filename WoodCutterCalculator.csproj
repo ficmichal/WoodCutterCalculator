@@ -58,6 +58,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -80,6 +83,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\CollectionDataValue.cs" />
+    <Compile Include="Models\Enums\StockClassEnum.cs" />
+    <Compile Include="Models\Enums\StockDetailsEnum.cs" />
+    <Compile Include="Models\Enums\StockLengthEnum.cs" />
     <Compile Include="Models\Extensions\ArrayExtensions.cs" />
     <Compile Include="Models\GeneticAlgorithm\GeneticAlgorithmParameters.cs" />
     <Compile Include="Models\GeneticAlgorithm\SpecimenPopulation.cs" />
@@ -87,6 +93,7 @@
     <Compile Include="Models\Order\Order.cs" />
     <Compile Include="Models\OrderProcessor.cs" />
     <Compile Include="Models\Order\DetailsOfPlanks.cs" />
+    <Compile Include="Models\StockWarehouse.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MenuViewModel.cs" />
     <Compile Include="ViewModels\PlotsViewModel.cs" />
