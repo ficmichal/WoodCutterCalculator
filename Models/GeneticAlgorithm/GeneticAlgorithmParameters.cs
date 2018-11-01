@@ -18,6 +18,7 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
         private int _numberOfIterations;
         private double _mutationRate;
         private double _percentageOfChildrenFromPreviousGeneration;
+        private double _percentageOfParentsChosenToSelection;
 
         #endregion
 
@@ -152,6 +153,25 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
                 }
 
                 _percentageOfChildrenFromPreviousGeneration = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public double PercentageOfParentsChosenToSelection
+        {
+            get
+            {
+                return _percentageOfParentsChosenToSelection;
+            }
+
+            set
+            {
+                if (_percentageOfParentsChosenToSelection == value)
+                {
+                    return;
+                }
+
+                _percentageOfParentsChosenToSelection = value;
                 RaisePropertyChanged();
             }
         }

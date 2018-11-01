@@ -7,22 +7,23 @@ using System.Threading.Tasks;
 using WoodCutterCalculator.Models.Enums;
 using WoodCutterCalculator.Models.Extensions;
 using WoodCutterCalculator.Models.GeneticAlgorithm;
-using WoodCutterCalculator.Models.Matlab;
 using WoodCutterCalculator.Models.Order;
+using WoodCutterCalculator.Models.Utils;
 
 namespace WoodCutterCalculator.Models
 {
     public class OrderProcessor
     {
+        private Random _randomDouble;
         private const int _lackOfPiecesThisClass = 0;
-        private int _numberOfPossibleCutsPerPlank;
-        private int _coefficientOfCut;
+        private readonly int _numberOfPossibleCutsPerPlank;
+        private readonly int _coefficientOfCut;
         private GeneticAlgorithmParameters _algorithmParameters;
 
         public int[][] PlanksInTheWarehouse { get; set; }
         public double[] HistoryOfLearning { get; set; }
         public double BestSolution { get; set; }
-        public StockWarehouse AllCuttedPlanks { get; set; }
+        public StockWarehouse AllCuttedStocks { get; set; }
 
         public OrderProcessor(GeneticAlgorithmParameters algorithmParameters)
         {
@@ -39,10 +40,12 @@ namespace WoodCutterCalculator.Models
                 new int[] {1, 1, 1, 1 ,2 ,1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2 },
                 new int[] {2, 2, 2, 2 ,2 ,1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3 }
             };
+            _randomDouble = new Random();
             _algorithmParameters = algorithmParameters;
             _coefficientOfCut = _algorithmParameters.CoefficientOfCut;
             _numberOfPossibleCutsPerPlank = _algorithmParameters.MaxPossibleCutsPerPlank;
-            AllCuttedPlanks = new StockWarehouse();
+            AllCuttedStocks = new StockWarehouse();
+
         }
 
         public object Calculate(ICollection<int> placedOrder)
@@ -52,41 +55,87 @@ namespace WoodCutterCalculator.Models
             HistoryOfLearning = new double[numberOfIterations];
             var countOfPlankPacks = PlanksInTheWarehouse.Length / numberOfPlanksPerPack;
 
+            //Split whole warehouse to pack of planks.
             for (int i = 0; i < countOfPlankPacks; i++)
             {
                 var plankPack = SplitWarehouseToPack(i, numberOfPlanksPerPack);
-                CalculateOnePackOfPlanks(plankPack, numberOfIterations);
+                //Main function - create, update population and calculate goal function.
+                var (theBestSolutionOfOnePack, theCuttedStocksOfOnePack) = CalculateOnePackOfPlanks(plankPack, numberOfIterations);
+                //Add best solution of package to global best solution.
+                BestSolution += theBestSolutionOfOnePack;
+                AllCuttedStocks.AddCuttedStocks(theCuttedStocksOfOnePack.CuttedStocks);
             }
 
             return new object();
         }
 
-        private object CalculateOnePackOfPlanks(int[][] packOfPlanks, int numberOfIterations)
+        private (double theBestSolutionOfOnePack, StockWarehouse theCuttedStocksOfOnePack) 
+            CalculateOnePackOfPlanks(int[][] packOfPlanks, int numberOfIterations)
         {
             var population = new SpecimenPopulation(_algorithmParameters);
+            //First iteration
+            var firstIteration = FindBestSolutionInCurrentPopulation(population, packOfPlanks);
+            var theBestSolutionOfOnePack = firstIteration.bestSolutionOfOnePack;
+            var theCuttedStocksOfOnePack = firstIteration.cuttedStocksOfOnePack;
+            population.UpdatePopulation(firstIteration.specimenClassification);
+
             for (int j = 0; j < numberOfIterations; j++)
             {
-                var bestSolutionInCurrentPopulation = FindBestSolutionInCurrentPopulation(population, packOfPlanks);
+                var (bestSolutionOfOnePack, cuttedStocksOfOnePack, specimenClassification) = 
+                    FindBestSolutionInCurrentPopulation(population, packOfPlanks);
+                if (bestSolutionOfOnePack > theBestSolutionOfOnePack)
+                {
+                    theBestSolutionOfOnePack = bestSolutionOfOnePack;
+                    theCuttedStocksOfOnePack = cuttedStocksOfOnePack;
+                }
+                HistoryOfLearning[j] += bestSolutionOfOnePack;
 
+                population.UpdatePopulation(specimenClassification);
             }
-            return new object();
+            return (theBestSolutionOfOnePack, theCuttedStocksOfOnePack);
         }
-        private double FindBestSolutionInCurrentPopulation(SpecimenPopulation population, int[][] packOfPlanks)
+
+        private (double bestSolutionOfOnePack, StockWarehouse cuttedStocksOfOnePack, SortedDictionary<double, int> specimenClassification) 
+            FindBestSolutionInCurrentPopulation(SpecimenPopulation population, int[][] packOfPlanks)
         {
-            var bestSolution = 0;
+            var bestPackOfCuttedStock = new StockWarehouse();
+            var bestSolutionInPackOfPlanks = 0.0;
             var sizeOfPopulation = population.Population.Length;
+
+            // every plank is calculated separately
             var sizeOfSpecimen = population.PackOfPlanks.Length;
             var countOfSpecimens = sizeOfPopulation / sizeOfSpecimen;
+            var specimenClassification = new SortedDictionary<double, int>(new DescendingComparer<double>());
+
             for (int i = 0; i < countOfSpecimens; i++)
             {
-                var specimen = SplitPopulationToSpecimens(population, i, sizeOfSpecimen);
+                var packOfCuttedStock = new StockWarehouse();
+                var valueOfPack = 0.0;
+
+                var specimen = population.SplitPopulationToSpecimens(i);
                 for (int j = 0; j < packOfPlanks.Length; j++)
                 {
                     var (plankValue, stocksOfCuttedPlank) = CalculateValueOfPlank(packOfPlanks[j], SplitSpecimenOfCutsToOnePlankCuts(specimen, j));
-                    bestSolution = 1;
+                    valueOfPack += plankValue;
+                    packOfCuttedStock.AddCuttedStocks(stocksOfCuttedPlank.CuttedStocks);
+                }
+
+                if (valueOfPack > bestSolutionInPackOfPlanks)
+                {
+                    bestSolutionInPackOfPlanks = valueOfPack;
+                    bestPackOfCuttedStock = packOfCuttedStock;
+                }
+                if (specimenClassification.Keys.Contains(valueOfPack))
+                {
+                    specimenClassification.Add(valueOfPack + _randomDouble.NextDouble(), i);
+                }
+                else
+                {
+                    specimenClassification.Add(valueOfPack, i);
                 }
             }
-            return 1.0;
+
+            return (bestSolutionInPackOfPlanks, bestPackOfCuttedStock, specimenClassification);
         }
 
         // 1 meter plank is registered as 20 of 5 cm pieces (int[]). It can be cut every 10 cm (byte[]).
@@ -185,6 +234,7 @@ namespace WoodCutterCalculator.Models
             else
             {
                 var allClasses = Enum.GetValues(typeof(StockClassEnum)).Cast<int>();
+
                 var theWorstClass = allClasses.Max();
                 for (int i = theWorstClass; i > 0; i--)
                 {
@@ -221,9 +271,6 @@ namespace WoodCutterCalculator.Models
 
         private int[][] SplitWarehouseToPack(int index, int numberOfPlanksPerPack)
             => PlanksInTheWarehouse.SubArray(index * numberOfPlanksPerPack, numberOfPlanksPerPack);
-
-        private byte[] SplitPopulationToSpecimens(SpecimenPopulation population, int index, int sizeOfSpecimen)
-            => population.Population.SubArray(index * sizeOfSpecimen, sizeOfSpecimen);
 
         private byte[] SplitSpecimenOfCutsToOnePlankCuts(byte[] specimen, int index)
             => specimen.SubArray(index * _numberOfPossibleCutsPerPlank, _numberOfPossibleCutsPerPlank);

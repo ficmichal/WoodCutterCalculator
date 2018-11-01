@@ -74,6 +74,7 @@ namespace WoodCutterCalculator.ViewModels
                     ?? (_startCalculations = new RelayCommand(
                     () =>
                     {
+                        _orderProcessor = new OrderProcessor(Parameters);
                         Result = _orderProcessor.Calculate(PlacedOrder);
                     }));
             }
@@ -100,7 +101,6 @@ namespace WoodCutterCalculator.ViewModels
         {
             _navigationService = navigationService;
             Parameters = new GeneticAlgorithmParameters();
-            _orderProcessor = new OrderProcessor(Parameters);
             PlacedOrder = new int[9] { 1, 2, 3, 3, 6, 8, 11, 3, 22 };
         }
 

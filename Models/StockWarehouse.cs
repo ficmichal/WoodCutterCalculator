@@ -33,5 +33,13 @@ namespace WoodCutterCalculator.Models
             CuttedStocks[cuttedStockDetails]++;
             return CuttedStocks;
         }
+
+        public void AddCuttedStocks(Dictionary<StockDetailsEnum, int> cuttedStocksDetails)
+        {
+            foreach (var stockDetail in cuttedStocksDetails.Keys)
+            {
+                CuttedStocks[stockDetail] += cuttedStocksDetails[stockDetail];
+            }
+        }
     }
 }

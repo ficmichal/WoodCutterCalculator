@@ -89,11 +89,11 @@
     <Compile Include="Models\Extensions\ArrayExtensions.cs" />
     <Compile Include="Models\GeneticAlgorithm\GeneticAlgorithmParameters.cs" />
     <Compile Include="Models\GeneticAlgorithm\SpecimenPopulation.cs" />
-    <Compile Include="Models\Matlab\MatlabClient.cs" />
     <Compile Include="Models\Order\Order.cs" />
     <Compile Include="Models\OrderProcessor.cs" />
     <Compile Include="Models\Order\DetailsOfPlanks.cs" />
     <Compile Include="Models\StockWarehouse.cs" />
+    <Compile Include="Models\Utils\DescendingComparer.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MenuViewModel.cs" />
     <Compile Include="ViewModels\PlotsViewModel.cs" />

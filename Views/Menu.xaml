@@ -43,6 +43,8 @@
             <Label Content="Max Possible Cuts&#xA;Per Plank" Foreground="Black" Height="51" Canvas.Left="323" Canvas.Top="242" Width="139" FontSize="16" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding Parameters.CoefficientOfCut}" Canvas.Left="707" Canvas.Top="304" Height="30" Width="164"/>
             <Label Content="             Coefficient of cut&#xA;(minor unit stock/minor unit plank" Foreground="Black" Height="52" Canvas.Left="682" Canvas.Top="247" Width="276" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <TextBox Text="{Binding Parameters.PercentageOfParentsChosenToSelection}" Canvas.Left="988" Canvas.Top="304" Height="30" Width="164"/>
+            <Label Content="Percentage of parents &#xA; chosen to selection" Foreground="Black" Height="52" Canvas.Left="988" Canvas.Top="247" Width="174" FontSize="16" RenderTransformOrigin="0.5,0.5" />
         </Canvas>
     </Grid>
 </Page>
