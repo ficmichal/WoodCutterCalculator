@@ -12,6 +12,7 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
         private static readonly Random _randomNumber = new Random();
         private int _sizeOfPopulation;
         private int _sizeOfSpecimen;
+        private double _mutationRate;
         private double _percentageOfChildrenFromPreviousGeneration;
         private double _percentageOfParentsChosenToSelection;
 
@@ -24,6 +25,7 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
             _percentageOfParentsChosenToSelection = algorithmParameters.PercentageOfParentsChosenToSelection;
             _sizeOfPopulation = algorithmParameters.SizeOfPopulation;
             _sizeOfSpecimen = algorithmParameters.NumberOfPlanksPerPack * algorithmParameters.MaxPossibleCutsPerPlank;
+            _mutationRate = algorithmParameters.MutationRate;
 
             PackOfPlanks = new byte[_sizeOfSpecimen];
             Population = new byte[_sizeOfPopulation * _sizeOfSpecimen];
@@ -57,6 +59,8 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
                 Array.Copy(CrossoverTwoSpecimens(specimenClassification), 0, newPopulation, 
                     (numberOfSurivorSpecimens + 2 * i) * _sizeOfSpecimen, 2 * _sizeOfSpecimen);
             }
+            //mutation
+            newPopulation = Mutate(newPopulation);
 
             Population = newPopulation;
         }
@@ -109,6 +113,28 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
                   firstIndexOfCutToCrossover, secondIndexOfCutToCrossover - firstIndexOfCutToCrossover);
 
             return crossoveredFirstSpecimen.Concat(crossoveredSecondSpecimen).ToArray();
+        }
+
+        public byte[] Mutate(byte[] newPopulation)
+        {
+            for (int i = 0; i < _sizeOfPopulation; i++)
+            {
+                byte[] mutateSpecimen;
+                if (_randomNumber.NextDouble() < _mutationRate)
+                {
+                    mutateSpecimen = MutateSpecimen(SplitPopulationToSpecimens(i), _randomNumber.Next(_sizeOfSpecimen));
+                    Array.Copy(mutateSpecimen, 0, newPopulation,
+                        i, _sizeOfSpecimen);
+                }
+            }
+
+            return newPopulation;
+        }
+
+        private byte[] MutateSpecimen(byte[] specimen, int index)
+        {
+            specimen[index] = (byte)(1 - specimen[index]);
+            return specimen;
         }
 
         public byte[] SplitPopulationToSpecimens(int index)
