@@ -28,12 +28,12 @@ namespace WoodCutterCalculator.Models.Stock
             var planksLength = Planks.Length;
             for (int i = 0; i < planksLength; i++)
             {
-                var classOfPieceOfPlank = _randomNumber.Next(1, 3);
+                var classOfPieceOfPlank = _randomNumber.Next(1, 4);
                 Planks[i] = new int[20];
                 Planks[i][0] = classOfPieceOfPlank;
                 for (int j = 1; j < 20; j++)
                 {
-                    var classes = new List<int> { 1, 2, 3 };
+                    var classes = RandomListOfClass();
                     var probabilityCoefficient = _randomNumber.NextDouble();
                     // 80%
                     if (probabilityCoefficient < 0.8)
@@ -60,6 +60,23 @@ namespace WoodCutterCalculator.Models.Stock
                 }
             }
             _mongoDBManager.PlanksToCut.InsertOne(new PlanksToCut { StartedCuttingDay = DateTime.UtcNow, Planks = Planks });
+        }
+
+        private List<int> RandomListOfClass()
+        {
+            var classes = new List<int> { 1, 2, 3 };
+            var randomList = new List<int>();
+            
+            while (randomList.Count < 3)
+            {
+                var randomClass = _randomNumber.Next(1, 4);
+                if (!randomList.Contains(randomClass))
+                {
+                    randomList.Add(randomClass);
+                }
+            }
+
+            return randomList;
         }
     }
 }
