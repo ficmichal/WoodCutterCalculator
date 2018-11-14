@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WoodCutterCalculator.Models.Enums;
 
-namespace WoodCutterCalculator.Models
+namespace WoodCutterCalculator.Models.Stock
 {
     public class StockWarehouse
     {
