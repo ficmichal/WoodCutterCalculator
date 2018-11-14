@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -7,71 +8,83 @@ using System.Threading.Tasks;
 using WoodCutterCalculator.Models.Enums;
 using WoodCutterCalculator.Models.Extensions;
 using WoodCutterCalculator.Models.GeneticAlgorithm;
+using WoodCutterCalculator.Models.Managers;
+using WoodCutterCalculator.Models.Mongo;
 using WoodCutterCalculator.Models.Order;
+using WoodCutterCalculator.Models.Stock;
 using WoodCutterCalculator.Models.Utils;
 
 namespace WoodCutterCalculator.Models
 {
     public class OrderProcessor
     {
+        private MongoDBManager mongoDBManager;
         private Random _randomDouble;
         private const int _lackOfPiecesThisClass = 0;
         private readonly int _numberOfPossibleCutsPerPlank;
         private readonly int _coefficientOfCut;
+        private readonly double _promotionRate;
         private GeneticAlgorithmParameters _algorithmParameters;
 
         public int[][] PlanksInTheWarehouse { get; set; }
         public double[] HistoryOfLearning { get; set; }
         public double BestSolution { get; set; }
         public StockWarehouse AllCuttedStocks { get; set; }
+        public bool NeccesityOfChangeFitness { get; set; } = false;
+        private IEnumerable<StockDetailsEnum> _classesOfNotEnoughCuttedStocks;
 
         public OrderProcessor(GeneticAlgorithmParameters algorithmParameters)
         {
-            PlanksInTheWarehouse = new int[][] 
-            {
-                new int[] {1, 1, 1, 1 ,2 ,1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2 },
-                new int[] {3, 3, 3, 3 ,3 ,3, 3, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2 },
-                new int[] {1, 2, 1, 2 ,2 ,1, 2, 2, 2, 2, 1, 1, 3, 3, 3, 3, 3, 3, 2, 2 },
-                new int[] {1, 3, 1, 1 ,2 ,3, 2, 3, 2, 3, 1, 1, 3, 1, 2, 2, 2, 2, 2, 2 },
-                new int[] {1, 1, 1, 3 ,2 ,1, 2, 2, 2, 2, 3, 3, 3, 3, 2, 1, 1, 1, 1, 1 },
-                new int[] {1, 1, 1, 1 ,1 ,1, 1, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2 },
-                new int[] {1, 1, 1, 1 ,1 ,1, 1, 1, 1, 3, 3, 3, 3, 3, 2, 1, 2, 2, 2, 2 },
-                new int[] {2, 2, 2, 2 ,2 ,1, 2, 2, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2 },
-                new int[] {1, 1, 1, 1 ,2 ,1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2 },
-                new int[] {2, 2, 2, 2 ,2 ,1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3 }
-            };
+            mongoDBManager = new MongoDBManager(new SettingsManager());
+            PlanksInTheWarehouse = mongoDBManager.PlanksToCut.AsQueryable().OrderByDescending(x => x.StartedCuttingDay).FirstOrDefault().Planks;
             _randomDouble = new Random();
             _algorithmParameters = algorithmParameters;
             _coefficientOfCut = _algorithmParameters.CoefficientOfCut;
+            _promotionRate = _algorithmParameters.PromotionRate;
             _numberOfPossibleCutsPerPlank = _algorithmParameters.MaxPossibleCutsPerPlank;
             AllCuttedStocks = new StockWarehouse();
-
+            HistoryOfLearning = new double[_algorithmParameters.NumberOfIterations];
         }
 
         public object Calculate(ICollection<int> placedOrder)
         {
+            var numberOfBigPacks = 10;
+            var numberOfPlanksPerBigPack = PlanksInTheWarehouse.Length / numberOfBigPacks;
             var numberOfPlanksPerPack = _algorithmParameters.NumberOfPlanksPerPack;
-            var numberOfIterations = _algorithmParameters.NumberOfIterations;
-            HistoryOfLearning = new double[numberOfIterations];
-            var countOfPlankPacks = PlanksInTheWarehouse.Length / numberOfPlanksPerPack;
+            var countOfPlankPacks = numberOfPlanksPerBigPack / numberOfPlanksPerPack;
 
-            //Split whole warehouse to pack of planks.
-            for (int i = 0; i < countOfPlankPacks; i++)
+            var placedOrderDictionary = FitnessUtils.ConvertPlacedOrderToDictionary(placedOrder.ToArray());
+            for (int i = 0; i < numberOfBigPacks; i++)
             {
-                var plankPack = SplitWarehouseToPack(i, numberOfPlanksPerPack);
-                //Main function - create, update population and calculate goal function.
-                var (theBestSolutionOfOnePack, theCuttedStocksOfOnePack) = CalculateOnePackOfPlanks(plankPack, numberOfIterations);
-                //Add best solution of package to global best solution.
-                BestSolution += theBestSolutionOfOnePack;
-                AllCuttedStocks.AddCuttedStocks(theCuttedStocksOfOnePack.CuttedStocks);
+                //Checking is a necessity to change a fitness.
+                //If we don't cut stocks properly to order yet, we change also the fitness for this big package.
+                _classesOfNotEnoughCuttedStocks = new List<StockDetailsEnum>();
+                _classesOfNotEnoughCuttedStocks = IsNeccesityOfChangeFitness
+                    (i / (double)numberOfBigPacks, placedOrderDictionary, AllCuttedStocks.CuttedStocks);
+
+                //Split whole warehouse to pack of planks.
+                var plankBigPack = SplitWarehouseToBigPacks(i, numberOfPlanksPerBigPack);
+                for (int j = 0; j < countOfPlankPacks; j++)
+                {
+                    var plankPack = SplitBigPackToSmallPacks(plankBigPack, j, numberOfPlanksPerPack);
+
+                    //Main function - create, update population and calculate fitness. 
+                    var (theBestSolutionOfOnePack, theCuttedStocksOfOnePack) = CalculateOnePackOfPlanks(plankPack);
+
+                    //Add best solution of package to global best solution.
+                    BestSolution += theBestSolutionOfOnePack;
+                    AllCuttedStocks.AddCuttedStocks(theCuttedStocksOfOnePack.CuttedStocks);
+                }
+
             }
 
             return new object();
         }
 
         private (double theBestSolutionOfOnePack, StockWarehouse theCuttedStocksOfOnePack) 
-            CalculateOnePackOfPlanks(int[][] packOfPlanks, int numberOfIterations)
+            CalculateOnePackOfPlanks(int[][] packOfPlanks)
         {
+            var numberOfIterations = _algorithmParameters.NumberOfIterations;
             var population = new SpecimenPopulation(_algorithmParameters);
             //First iteration
             var firstIteration = FindBestSolutionInCurrentPopulation(population, packOfPlanks);
@@ -102,7 +115,7 @@ namespace WoodCutterCalculator.Models
             var bestSolutionInPackOfPlanks = 0.0;
             var sizeOfPopulation = population.Population.Length;
 
-            // every plank is calculated separately
+            //Every plank is calculated separately.
             var sizeOfSpecimen = population.PackOfPlanks.Length;
             var countOfSpecimens = sizeOfPopulation / sizeOfSpecimen;
             var specimenClassification = new SortedDictionary<double, int>(new DescendingComparer<double>());
@@ -111,35 +124,37 @@ namespace WoodCutterCalculator.Models
             {
                 var packOfCuttedStock = new StockWarehouse();
                 var valueOfPack = 0.0;
+                var promotedValueOfPack = 0.0;
 
+                //Calculate every plank separately as a one specimen.
                 var specimen = population.SplitPopulationToSpecimens(i);
                 for (int j = 0; j < packOfPlanks.Length; j++)
                 {
-                    var (plankValue, stocksOfCuttedPlank) = CalculateValueOfPlank(packOfPlanks[j], SplitSpecimenOfCutsToOnePlankCuts(specimen, j));
+                    //Cut plank and calculate its value.
+                    var (plankValue, promotedPlankValue, stocksOfCuttedPlank) 
+                        = CalculateValueOfPlank(packOfPlanks[j], SplitSpecimenOfCutsToOnePlankCuts(specimen, j));
+                    //Add calculated values of plank to the small pack of plank.
                     valueOfPack += plankValue;
+                    promotedValueOfPack += promotedPlankValue;
                     packOfCuttedStock.AddCuttedStocks(stocksOfCuttedPlank.CuttedStocks);
                 }
 
-                if (valueOfPack > bestSolutionInPackOfPlanks)
+                //If we don't cut stocks properly to order yet, we checked fitness with promotion.
+                if (_classesOfNotEnoughCuttedStocks.Count() > 0 
+                    ? promotedValueOfPack > bestSolutionInPackOfPlanks : valueOfPack > bestSolutionInPackOfPlanks)
                 {
                     bestSolutionInPackOfPlanks = valueOfPack;
                     bestPackOfCuttedStock = packOfCuttedStock;
                 }
-                if (specimenClassification.Keys.Contains(valueOfPack))
-                {
-                    specimenClassification.Add(valueOfPack + _randomDouble.NextDouble(), i);
-                }
-                else
-                {
-                    specimenClassification.Add(valueOfPack, i);
-                }
+                //Add genotype and its fenotype to sorted specimen dictionary
+                ClassifyTheSpecimens(specimenClassification, valueOfPack, i);
             }
 
             return (bestSolutionInPackOfPlanks, bestPackOfCuttedStock, specimenClassification);
         }
 
-        // 1 meter plank is registered as 20 of 5 cm pieces (int[]). It can be cut every 10 cm (byte[]).
-        public (double plankValue, StockWarehouse stocksOfCuttedPlank) CalculateValueOfPlank(int[] plank, byte[] cuts)
+        //1 meter plank is registered as 20 of 5 cm pieces (int[]). It can be cut every 10 cm (byte[]).
+        public (double plankValue, double promotedPlankValue, StockWarehouse stocksOfCuttedPlank) CalculateValueOfPlank(int[] plank, byte[] cuts)
         {
             var cuttedPlank = CutPlank(plank, cuts);
 
@@ -148,8 +163,7 @@ namespace WoodCutterCalculator.Models
 
         public int[][] CutPlank(int[] plank, byte[] cuts)
         {
-            int maxCuttedPieces = 10;
-            int[][] cuttedPiecesOfWood = new int[maxCuttedPieces][];
+            int[][] cuttedPiecesOfWood = new int[_algorithmParameters.MaxPossibleCutsPerPlank + 1][];
             int index = 0;
             int lastCutIndex = -1;
 
@@ -178,10 +192,11 @@ namespace WoodCutterCalculator.Models
             return cuttedPiecesOfWood.Where(x => x?.Count() > 0).ToArray();
         }
 
-        public (double, StockWarehouse) CalculateValueOfCuttedPlank(int[][] cuttedPlank)
+        public (double, double, StockWarehouse) CalculateValueOfCuttedPlank(int[][] cuttedPlank)
         {
             var calculatedStocks = new StockWarehouse();
             var totalValue = 0.0;
+            var promotedTotalValue = 0.0;
 
             var cuttedPlankLength = cuttedPlank.Length;
             for (int i = 0; i < cuttedPlankLength; i++)
@@ -192,67 +207,73 @@ namespace WoodCutterCalculator.Models
                     { StockClassEnum.SecondClass, 0 },
                     { StockClassEnum.ThirdClass, 0 },
                 };
+                //Counting smallest piecies of plank grouped by class
                 var stockLength = cuttedPlank[i].Length;
                 for (int j = 0; j < stockLength; j++)
                 {
-                    if (cuttedPlank[i][j] == 1)
-                    {
-                        smallPieciesOfPlank[StockClassEnum.FirstClass]++;
-                    }
-                    else if (cuttedPlank[i][j] == 2)
-                    {
-                        smallPieciesOfPlank[StockClassEnum.SecondClass]++;
-                    }
-                    else
-                    {
-                        smallPieciesOfPlank[StockClassEnum.ThirdClass]++;
-                    }
+                    smallPieciesOfPlank[(StockClassEnum)cuttedPlank[i][j]]++;
                 }
-                var (valueOfStock, kindOfStock) = CalculateStock(stockLength, smallPieciesOfPlank);
-                totalValue += valueOfStock;
+
+                var (realValueOfStock, promotedValueOfStock, kindOfStock) = CalculateStock(stockLength, smallPieciesOfPlank);
+                totalValue += realValueOfStock;
+                promotedTotalValue += promotedValueOfStock;
                 calculatedStocks.AddCuttedStock(kindOfStock);
             }
 
-            return (totalValue, calculatedStocks);
+            return (totalValue, promotedTotalValue, calculatedStocks);
         }
 
-        public (double valueOfStock, StockDetailsEnum kindOfStock) CalculateStock(int stockLength, 
+        public (double realValueOfStock, double promotedValueOfStock, StockDetailsEnum kindOfStock) CalculateStock(int stockLength, 
             Dictionary<StockClassEnum, int> smallPieciesOfPlank)
         {
             double realValueOfStock;
             StockDetailsEnum kindOfStock;
+            double promotedValueOfStock;
+            var minLength = _coefficientOfCut * DetailsOfStocks.MultipleMinorStockUnit.FirstOrDefault().Value;
+            var maxLength = _coefficientOfCut * DetailsOfStocks.MultipleMinorStockUnit.LastOrDefault().Value;
 
-            //too long or too short stocks
-            if (stockLength > 8 || stockLength < 4)
+            //Too long or too short stocks are useless.
+            if (stockLength > maxLength || stockLength < minLength)
             {
                 kindOfStock = StockDetailsEnum.Useless;
                 realValueOfStock = -(smallPieciesOfPlank[StockClassEnum.FirstClass] * DetailsOfStocks.LossesPer5Cm[StockClassEnum.FirstClass]
                     + smallPieciesOfPlank[StockClassEnum.SecondClass] * DetailsOfStocks.LossesPer5Cm[StockClassEnum.SecondClass]
                     + smallPieciesOfPlank[StockClassEnum.ThirdClass] * DetailsOfStocks.LossesPer5Cm[StockClassEnum.ThirdClass]);
-                return (realValueOfStock, kindOfStock);
+                return (realValueOfStock, realValueOfStock, kindOfStock);
             }
             else
             {
                 var allClasses = Enum.GetValues(typeof(StockClassEnum)).Cast<int>();
-
+                //Loop starts from the worst class. If even only a one element is this class that means all stock must be this class.
+                //If condition is false we iterate to better class.
                 var theWorstClass = allClasses.Max();
                 for (int i = theWorstClass; i > 0; i--)
                 {
+                    //Is there any element which is [i] class?
                     if (smallPieciesOfPlank[(StockClassEnum)i] != _lackOfPiecesThisClass)
                     {
+                        //Get a details about stock (length and class)
                         kindOfStock = (StockDetailsEnum)(DetailsOfStocks.MultipleConst * stockLength + i);
+
                         var valueOfStockWithoutLoss = DetailsOfStocks.Prices[kindOfStock];
 
                         var classPossibleLossOfStock = allClasses.Where(e => e < i);
                         var lossValue = CalculateLoss(classPossibleLossOfStock.ToArray(), smallPieciesOfPlank);
 
-                        realValueOfStock = valueOfStockWithoutLoss - lossValue;
-                        return (realValueOfStock, kindOfStock);
+                        realValueOfStock = promotedValueOfStock = valueOfStockWithoutLoss - lossValue;
+
+                        //Is there a necessity to change fitness?
+                        if (_classesOfNotEnoughCuttedStocks.Contains(kindOfStock))
+                        {
+                            promotedValueOfStock = DetailsOfStocks.Prices[kindOfStock] * _promotionRate;
+                        }
+
+                        return (realValueOfStock, promotedValueOfStock, kindOfStock);
                     }
                 }
 
                 //something go wrong
-                return (-10000, StockDetailsEnum.Useless);
+                return (-10000, -10000, StockDetailsEnum.Useless);
             }
         }
 
@@ -269,7 +290,10 @@ namespace WoodCutterCalculator.Models
             return loss;
         }
 
-        private int[][] SplitWarehouseToPack(int index, int numberOfPlanksPerPack)
+        private int[][] SplitBigPackToSmallPacks(int[][] bigPack, int index, int numberOfPlanksPerPack)
+            => bigPack.SubArray(index * numberOfPlanksPerPack, numberOfPlanksPerPack);
+
+        private int[][] SplitWarehouseToBigPacks(int index, int numberOfPlanksPerPack)
             => PlanksInTheWarehouse.SubArray(index * numberOfPlanksPerPack, numberOfPlanksPerPack);
 
         private byte[] SplitSpecimenOfCutsToOnePlankCuts(byte[] specimen, int index)
@@ -277,5 +301,34 @@ namespace WoodCutterCalculator.Models
 
         private int[] CutPlankToStock(int[] plank, int index, int lastCutIndex)
             => plank.SubArray(_coefficientOfCut * (lastCutIndex + 1), _coefficientOfCut * (index - lastCutIndex));
+
+        private void ClassifyTheSpecimens(SortedDictionary<double, int> specimenClassification, double valueOfPack, int index)
+        {
+            if (specimenClassification.Keys.Contains(valueOfPack))
+            {
+                specimenClassification.Add(valueOfPack + _randomDouble.NextDouble(), index);
+            }
+            else
+            {
+                specimenClassification.Add(valueOfPack, index);
+            }
+        }
+
+        private List<StockDetailsEnum> IsNeccesityOfChangeFitness(double percentOfProceedAlgorithm,
+            Dictionary<StockDetailsEnum, int> placedOrder, Dictionary<StockDetailsEnum, int> alreadyCuttedStocks)
+        {
+            var classesOfNotEnoughCuttedStocks = new List<StockDetailsEnum>();
+            var changingFitnessDictionary = FitnessUtils.IsNecessityToChangeFitness(percentOfProceedAlgorithm, placedOrder, alreadyCuttedStocks);
+
+            foreach(var item in changingFitnessDictionary)
+            {
+                if (item.Value)
+                {
+                    classesOfNotEnoughCuttedStocks.Add(item.Key);
+                }
+            }
+
+            return classesOfNotEnoughCuttedStocks;
+        }
     }
 }

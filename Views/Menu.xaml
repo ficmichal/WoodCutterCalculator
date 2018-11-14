@@ -41,10 +41,13 @@
             <Label Content="Percentage of children&#xA;from previous generation" Foreground="Black" Height="51" Canvas.Left="1078" Canvas.Top="148" Width="197" FontSize="16" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding Parameters.MaxPossibleCutsPerPlank}" Canvas.Left="323" Canvas.Top="300" Height="30" Width="164"/>
             <Label Content="Max Possible Cuts&#xA;Per Plank" Foreground="Black" Height="51" Canvas.Left="323" Canvas.Top="242" Width="139" FontSize="16" RenderTransformOrigin="0.5,0.5" />
-            <TextBox Text="{Binding Parameters.CoefficientOfCut}" Canvas.Left="707" Canvas.Top="304" Height="30" Width="164"/>
-            <Label Content="             Coefficient of cut&#xA;(minor unit stock/minor unit plank" Foreground="Black" Height="52" Canvas.Left="682" Canvas.Top="247" Width="276" FontSize="16" RenderTransformOrigin="0.5,0.5" />
-            <TextBox Text="{Binding Parameters.PercentageOfParentsChosenToSelection}" Canvas.Left="988" Canvas.Top="304" Height="30" Width="164"/>
-            <Label Content="Percentage of parents &#xA; chosen to selection" Foreground="Black" Height="52" Canvas.Left="988" Canvas.Top="247" Width="174" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <TextBox Text="{Binding Parameters.CoefficientOfCut}" Canvas.Left="580" Canvas.Top="300" Height="30" Width="164"/>
+            <Label Content="             Coefficient of cut&#xA;(minor unit stock/minor unit plank" Foreground="Black" Height="52" Canvas.Left="554" Canvas.Top="243" Width="276" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <TextBox Text="{Binding Parameters.PercentageOfParentsChosenToSelection}" Canvas.Left="855" Canvas.Top="303" Height="30" Width="164"/>
+            <Label Content="Percentage of parents &#xA; chosen to selection" Foreground="Black" Height="52" Canvas.Left="855" Canvas.Top="246" Width="174" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <Button Command="{Binding FillPlankWarehouse}" Content="Fill" Height="26" Canvas.Left="47" Canvas.Top="641" Width="100" Foreground="Black" FontSize="12"/>
+            <TextBox Text="{Binding Parameters.PromotionRate}" Canvas.Left="1078" Canvas.Top="303" Height="30" Width="164"/>
+            <Label Content="Promotion rate" Foreground="Black" Height="52" Canvas.Left="1078" Canvas.Top="246" Width="174" FontSize="16" RenderTransformOrigin="0.5,0.5" />
         </Canvas>
     </Grid>
 </Page>

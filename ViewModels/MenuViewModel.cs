@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using WoodCutterCalculator.Models;
 using WoodCutterCalculator.Models.GeneticAlgorithm;
+using WoodCutterCalculator.Models.Managers;
+using WoodCutterCalculator.Models.Mongo;
+using WoodCutterCalculator.Models.Stock;
 using WoodCutterCalculator.ViewModels.Helpers;
 
 namespace WoodCutterCalculator.ViewModels
@@ -21,7 +24,10 @@ namespace WoodCutterCalculator.ViewModels
         private OrderProcessor _orderProcessor;
         private RelayCommand _goToPlotsCommand;
         private RelayCommand _startCalculations;
+        private RelayCommand _fillPlankWarehouse;
         private GeneticAlgorithmParameters _parameters;
+        private SettingsManager _settingsManager;
+        private MongoDBManager _mongoDBManager;
 
         #endregion
 
@@ -80,6 +86,21 @@ namespace WoodCutterCalculator.ViewModels
             }
         }
 
+        public RelayCommand FillPlankWarehouse
+        {
+            get
+            {
+                return _fillPlankWarehouse
+                    ?? (_fillPlankWarehouse = new RelayCommand(
+                    () =>
+                    {
+                        _mongoDBManager = new MongoDBManager(new SettingsManager());
+                        var stockWarehouseProcessor = new StockWarehouseProcessor(Parameters, _mongoDBManager);
+                        stockWarehouseProcessor.SeedStockWarehouse();
+                    }));
+            }
+        }
+
         public RelayCommand GoToPlotsCommand
         {
             get
@@ -101,7 +122,7 @@ namespace WoodCutterCalculator.ViewModels
         {
             _navigationService = navigationService;
             Parameters = new GeneticAlgorithmParameters();
-            PlacedOrder = new int[9] { 1, 2, 3, 3, 6, 8, 11, 3, 22 };
+            PlacedOrder = new int[9] { 10, 20, 30, 10, 20, 30, 10, 20, 30 };
         }
 
         #endregion
