@@ -24,7 +24,7 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
             _percentageOfChildrenFromPreviousGeneration = algorithmParameters.PercentageOfChildrenFromPreviousGeneration;
             _percentageOfParentsChosenToSelection = algorithmParameters.PercentageOfParentsChosenToSelection;
             _sizeOfPopulation = algorithmParameters.SizeOfPopulation;
-            _sizeOfSpecimen = algorithmParameters.NumberOfPlanksPerPack * algorithmParameters.MaxPossibleCutsPerPlank;
+            _sizeOfSpecimen = algorithmParameters.NumberOfPlanksPerPack * (algorithmParameters.LenghtOfPlank - 1);
             _mutationRate = algorithmParameters.MutationRate;
 
             PackOfPlanks = new byte[_sizeOfSpecimen];

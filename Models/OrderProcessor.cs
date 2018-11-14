@@ -1,10 +1,7 @@
 ﻿using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WoodCutterCalculator.Models.Enums;
 using WoodCutterCalculator.Models.Extensions;
 using WoodCutterCalculator.Models.GeneticAlgorithm;
@@ -22,9 +19,9 @@ namespace WoodCutterCalculator.Models
         private Random _randomDouble;
         private const int _lackOfPiecesThisClass = 0;
         private readonly int _numberOfPossibleCutsPerPlank;
-        private readonly int _coefficientOfCut;
         private readonly double _promotionRate;
         private GeneticAlgorithmParameters _algorithmParameters;
+        private List<StockDetailsEnum> _possibleCuttedStocks;
 
         public int[][] PlanksInTheWarehouse { get; set; }
         public double[] HistoryOfLearning { get; set; }
@@ -39,9 +36,9 @@ namespace WoodCutterCalculator.Models
             PlanksInTheWarehouse = mongoDBManager.PlanksToCut.AsQueryable().OrderByDescending(x => x.StartedCuttingDay).FirstOrDefault().Planks;
             _randomDouble = new Random();
             _algorithmParameters = algorithmParameters;
-            _coefficientOfCut = _algorithmParameters.CoefficientOfCut;
             _promotionRate = _algorithmParameters.PromotionRate;
-            _numberOfPossibleCutsPerPlank = _algorithmParameters.MaxPossibleCutsPerPlank;
+            _numberOfPossibleCutsPerPlank = _algorithmParameters.LenghtOfPlank - 1;
+            _possibleCuttedStocks = DetailsOfStocks.Prices.Keys.ToList();
             AllCuttedStocks = new StockWarehouse();
             HistoryOfLearning = new double[_algorithmParameters.NumberOfIterations];
         }
@@ -163,7 +160,7 @@ namespace WoodCutterCalculator.Models
 
         public int[][] CutPlank(int[] plank, byte[] cuts)
         {
-            int[][] cuttedPiecesOfWood = new int[_algorithmParameters.MaxPossibleCutsPerPlank + 1][];
+            int[][] cuttedPiecesOfWood = new int[_algorithmParameters.LenghtOfPlank][];
             int index = 0;
             int lastCutIndex = -1;
 
@@ -229,16 +226,16 @@ namespace WoodCutterCalculator.Models
             double realValueOfStock;
             StockDetailsEnum kindOfStock;
             double promotedValueOfStock;
-            var minLength = _coefficientOfCut * DetailsOfStocks.MultipleMinorStockUnit.FirstOrDefault().Value;
-            var maxLength = _coefficientOfCut * DetailsOfStocks.MultipleMinorStockUnit.LastOrDefault().Value;
+            var minLength = DetailsOfStocks.MultipleMinorStockUnit.FirstOrDefault().Value;
+            var maxLength = DetailsOfStocks.MultipleMinorStockUnit.LastOrDefault().Value;
 
             //Too long or too short stocks are useless.
             if (stockLength > maxLength || stockLength < minLength)
             {
                 kindOfStock = StockDetailsEnum.Useless;
-                realValueOfStock = -(smallPieciesOfPlank[StockClassEnum.FirstClass] * DetailsOfStocks.LossesPer5Cm[StockClassEnum.FirstClass]
-                    + smallPieciesOfPlank[StockClassEnum.SecondClass] * DetailsOfStocks.LossesPer5Cm[StockClassEnum.SecondClass]
-                    + smallPieciesOfPlank[StockClassEnum.ThirdClass] * DetailsOfStocks.LossesPer5Cm[StockClassEnum.ThirdClass]);
+                realValueOfStock = -(smallPieciesOfPlank[StockClassEnum.FirstClass] * DetailsOfStocks.LossesPerMinorUnit[StockClassEnum.FirstClass]
+                    + smallPieciesOfPlank[StockClassEnum.SecondClass] * DetailsOfStocks.LossesPerMinorUnit[StockClassEnum.SecondClass]
+                    + smallPieciesOfPlank[StockClassEnum.ThirdClass] * DetailsOfStocks.LossesPerMinorUnit[StockClassEnum.ThirdClass]);
                 return (realValueOfStock, realValueOfStock, kindOfStock);
             }
             else
@@ -254,21 +251,29 @@ namespace WoodCutterCalculator.Models
                     {
                         //Get a details about stock (length and class)
                         kindOfStock = (StockDetailsEnum)(DetailsOfStocks.MultipleConst * stockLength + i);
-
-                        var valueOfStockWithoutLoss = DetailsOfStocks.Prices[kindOfStock];
-
-                        var classPossibleLossOfStock = allClasses.Where(e => e < i);
-                        var lossValue = CalculateLoss(classPossibleLossOfStock.ToArray(), smallPieciesOfPlank);
-
-                        realValueOfStock = promotedValueOfStock = valueOfStockWithoutLoss - lossValue;
-
-                        //Is there a necessity to change fitness?
-                        if (_classesOfNotEnoughCuttedStocks.Contains(kindOfStock))
+                        //Condition checking existance that stock
+                        if(_possibleCuttedStocks.Contains(kindOfStock))
                         {
-                            promotedValueOfStock = DetailsOfStocks.Prices[kindOfStock] * _promotionRate;
-                        }
+                            var valueOfStockWithoutLoss = DetailsOfStocks.Prices[kindOfStock];
 
-                        return (realValueOfStock, promotedValueOfStock, kindOfStock);
+                            var classPossibleLossOfStock = allClasses.Where(e => e < i);
+                            var lossValue = CalculateLoss(classPossibleLossOfStock.ToArray(), smallPieciesOfPlank);
+
+                            realValueOfStock = promotedValueOfStock = valueOfStockWithoutLoss - lossValue;
+
+                            //Is there a necessity to change fitness?
+                            if (_classesOfNotEnoughCuttedStocks.Contains(kindOfStock))
+                            {
+                                promotedValueOfStock = DetailsOfStocks.Prices[kindOfStock] * _promotionRate;
+                            }
+
+                            return (realValueOfStock, promotedValueOfStock, kindOfStock);
+                        }
+                        //Wrong dimension or class
+                        else
+                        {
+                            return (0, 0, StockDetailsEnum.Useless);
+                        }
                     }
                 }
 
@@ -284,7 +289,7 @@ namespace WoodCutterCalculator.Models
             for (int i = 0; i < lengthOfClassPossibleLossOfStock; i++)
             {
                 var stockClass = (StockClassEnum)classPossibleLossOfStock[i];
-                loss += DetailsOfStocks.LossesPer5Cm[stockClass] * smallPieciesOfPlank[stockClass];
+                loss += DetailsOfStocks.LossesPerMinorUnit[stockClass] * smallPieciesOfPlank[stockClass];
             }
 
             return loss;
@@ -300,7 +305,7 @@ namespace WoodCutterCalculator.Models
             => specimen.SubArray(index * _numberOfPossibleCutsPerPlank, _numberOfPossibleCutsPerPlank);
 
         private int[] CutPlankToStock(int[] plank, int index, int lastCutIndex)
-            => plank.SubArray(_coefficientOfCut * (lastCutIndex + 1), _coefficientOfCut * (index - lastCutIndex));
+            => plank.SubArray(lastCutIndex + 1, index - lastCutIndex);
 
         private void ClassifyTheSpecimens(SortedDictionary<double, int> specimenClassification, double valueOfPack, int index)
         {

@@ -10,7 +10,7 @@ namespace WoodCutterCalculator.Models.Order
     public class DetailsOfStocks
     {
         public const int MultipleConst = 10;
-        public static Dictionary<StockClassEnum, double> LossesPer5Cm = new Dictionary<StockClassEnum, double>
+        public static Dictionary<StockClassEnum, double> LossesPerMinorUnit = new Dictionary<StockClassEnum, double>
         {
             { StockClassEnum.FirstClass, 2.0 },
             { StockClassEnum.SecondClass, 1.0 },
@@ -32,9 +32,9 @@ namespace WoodCutterCalculator.Models.Order
 
         public static Dictionary<StockLengthEnum, int> MultipleMinorStockUnit = new Dictionary<StockLengthEnum, int>
         {
-            { StockLengthEnum.Length20cm, 2 },
-            { StockLengthEnum.Length30cm, 3 },
-            { StockLengthEnum.Length40cm, 4 }
+            { StockLengthEnum.Length20cm, 4 },
+            { StockLengthEnum.Length30cm, 6 },
+            { StockLengthEnum.Length40cm, 8 }
         };
     }
 }
