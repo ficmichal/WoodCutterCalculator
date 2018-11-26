@@ -20,14 +20,16 @@ namespace WoodCutterCalculator.ViewModels
         #region Fields
 
         private IFrameNavigationService _navigationService;
-        private int[] _placedOrder;
         private OrderProcessor _orderProcessor;
+        private StockWarehouseProcessor _stockWarehouseProcessor;
+
+        private GeneticAlgorithmParameters _parameters;
+        private int[] _placedOrder;
+
         private RelayCommand _goToPlotsCommand;
         private RelayCommand _startCalculations;
         private RelayCommand _fillPlankWarehouse;
-        private GeneticAlgorithmParameters _parameters;
-        private SettingsManager _settingsManager;
-        private MongoDBManager _mongoDBManager;
+
 
         #endregion
 
@@ -80,8 +82,7 @@ namespace WoodCutterCalculator.ViewModels
                     ?? (_startCalculations = new RelayCommand(
                     () =>
                     {
-                        _orderProcessor = new OrderProcessor(Parameters);
-                        Result = _orderProcessor.Calculate(PlacedOrder);
+                        Result = _orderProcessor.Create(Parameters).Calculate(PlacedOrder);
                     }));
             }
         }
@@ -94,9 +95,8 @@ namespace WoodCutterCalculator.ViewModels
                     ?? (_fillPlankWarehouse = new RelayCommand(
                     () =>
                     {
-                        _mongoDBManager = new MongoDBManager(new SettingsManager());
-                        var stockWarehouseProcessor = new StockWarehouseProcessor(Parameters, _mongoDBManager);
-                        stockWarehouseProcessor.SeedStockWarehouse();
+                        _stockWarehouseProcessor.Create(Parameters)
+                        .SeedStockWarehouse();
                     }));
             }
         }
@@ -118,9 +118,13 @@ namespace WoodCutterCalculator.ViewModels
 
         #region Constructor
 
-        public MenuViewModel(IFrameNavigationService navigationService)//, OrderProcessor orderProcessor)
+        public MenuViewModel(IFrameNavigationService navigationService, 
+            OrderProcessor orderProcessor, StockWarehouseProcessor stockWarehouseProcessor)
         {
             _navigationService = navigationService;
+            _orderProcessor = orderProcessor;
+            _stockWarehouseProcessor = stockWarehouseProcessor;
+
             Parameters = new GeneticAlgorithmParameters();
             PlacedOrder = new int[9] { 10, 20, 30, 10, 20, 30, 10, 20, 30 };
         }

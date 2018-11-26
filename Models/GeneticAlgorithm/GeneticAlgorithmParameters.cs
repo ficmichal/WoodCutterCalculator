@@ -1,9 +1,4 @@
 ﻿using GalaSoft.MvvmLight;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WoodCutterCalculator.Models.GeneticAlgorithm
 {
@@ -43,7 +38,7 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
             }
         }
 
-        public int LenghtOfPlank
+        public int LengthOfPlank
         {
             get
             {

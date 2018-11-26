@@ -5,7 +5,6 @@ using System.Linq;
 using WoodCutterCalculator.Models.Enums;
 using WoodCutterCalculator.Models.Extensions;
 using WoodCutterCalculator.Models.GeneticAlgorithm;
-using WoodCutterCalculator.Models.Managers;
 using WoodCutterCalculator.Models.Mongo;
 using WoodCutterCalculator.Models.Order;
 using WoodCutterCalculator.Models.Stock;
@@ -15,32 +14,36 @@ namespace WoodCutterCalculator.Models
 {
     public class OrderProcessor
     {
-        private MongoDBManager mongoDBManager;
-        private Random _randomDouble;
+        private IMongoDBManager _mongoDBManager;
+        private Random _randomDouble =  new Random();
         private const int _lackOfPiecesThisClass = 0;
-        private readonly int _numberOfPossibleCutsPerPlank;
-        private readonly double _promotionRate;
+        private int _numberOfPossibleCutsPerPlank;
+        private double _promotionRate;
         private GeneticAlgorithmParameters _algorithmParameters;
         private List<StockDetailsEnum> _possibleCuttedStocks;
 
         public int[][] PlanksInTheWarehouse { get; set; }
         public double[] HistoryOfLearning { get; set; }
         public double BestSolution { get; set; }
-        public StockWarehouse AllCuttedStocks { get; set; }
+        public StockWarehouse AllCuttedStocks { get; set; } =  new StockWarehouse();
         public bool NeccesityOfChangeFitness { get; set; } = false;
         private IEnumerable<StockDetailsEnum> _classesOfNotEnoughCuttedStocks;
 
-        public OrderProcessor(GeneticAlgorithmParameters algorithmParameters)
+        public OrderProcessor(IMongoDBManager mongoDBManager)
         {
-            mongoDBManager = new MongoDBManager(new SettingsManager());
-            PlanksInTheWarehouse = mongoDBManager.PlanksToCut.AsQueryable().OrderByDescending(x => x.StartedCuttingDay).FirstOrDefault().Planks;
-            _randomDouble = new Random();
+            _mongoDBManager = mongoDBManager;
+        }
+
+        public OrderProcessor Create(GeneticAlgorithmParameters algorithmParameters)
+        {
+            PlanksInTheWarehouse = _mongoDBManager.PlanksToCut.AsQueryable().OrderByDescending(x => x.StartedCuttingDay).FirstOrDefault().Planks;
             _algorithmParameters = algorithmParameters;
             _promotionRate = _algorithmParameters.PromotionRate;
-            _numberOfPossibleCutsPerPlank = _algorithmParameters.LenghtOfPlank - 1;
+            _numberOfPossibleCutsPerPlank = _algorithmParameters.LengthOfPlank - 1;
             _possibleCuttedStocks = DetailsOfStocks.Prices.Keys.ToList();
-            AllCuttedStocks = new StockWarehouse();
             HistoryOfLearning = new double[_algorithmParameters.NumberOfIterations];
+
+            return this;
         }
 
         public object Calculate(ICollection<int> placedOrder)
@@ -160,7 +163,7 @@ namespace WoodCutterCalculator.Models
 
         public int[][] CutPlank(int[] plank, byte[] cuts)
         {
-            int[][] cuttedPiecesOfWood = new int[_algorithmParameters.LenghtOfPlank][];
+            int[][] cuttedPiecesOfWood = new int[_algorithmParameters.LengthOfPlank][];
             int index = 0;
             int lastCutIndex = -1;
 

@@ -11,13 +11,15 @@ namespace WoodCutterCalculator.Models.Mongo
 {
     public class MongoDBManager : IMongoDBManager
     {
+        private ISettingsManager _settings;
         private readonly IMongoDatabase _database = null;
 
         public MongoDBManager(ISettingsManager settings)
         {
+            _settings = settings;
             try
             {
-                MongoSettings mongoSettings = settings.GetSettings();
+                var mongoSettings = _settings.GetSettings();
 
                 var client = new MongoClient(mongoSettings.ConnectionString);
                 if (client != null)

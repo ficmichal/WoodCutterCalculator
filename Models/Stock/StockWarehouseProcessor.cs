@@ -10,17 +10,22 @@ namespace WoodCutterCalculator.Models.Stock
 {
     public class StockWarehouseProcessor
     {
-        private readonly MongoDBManager _mongoDBManager;
-        private Random _randomNumber;
+        private readonly IMongoDBManager _mongoDBManager;
+        private Random _randomNumber = new Random();
         public int[][] Planks;
         private GeneticAlgorithmParameters _parameters;
 
-        public StockWarehouseProcessor(GeneticAlgorithmParameters parameters, MongoDBManager mongoDBManager)
+        public StockWarehouseProcessor(IMongoDBManager mongoDBManager)
         {
             _mongoDBManager = mongoDBManager;
-            _randomNumber = new Random();
-            Planks = new int[100][];
+        }
+
+        public StockWarehouseProcessor Create(GeneticAlgorithmParameters parameters)
+        {
             _parameters = parameters;
+            Planks = new int[100][];
+
+            return this;
         }
 
         public void SeedStockWarehouse()
@@ -29,7 +34,7 @@ namespace WoodCutterCalculator.Models.Stock
             for (int i = 0; i < planksLength; i++)
             {
                 var classOfPieceOfPlank = _randomNumber.Next(1, 4);
-                Planks[i] = new int[_parameters.LenghtOfPlank];
+                Planks[i] = new int[_parameters.LengthOfPlank];
                 Planks[i][0] = classOfPieceOfPlank;
                 for (int j = 1; j < Planks[i].Length; j++)
                 {
