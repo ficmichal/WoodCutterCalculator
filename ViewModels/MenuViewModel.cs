@@ -82,7 +82,8 @@ namespace WoodCutterCalculator.ViewModels
                     ?? (_startCalculations = new RelayCommand(
                     () =>
                     {
-                        Result = _orderProcessor.Create(Parameters).Calculate(PlacedOrder);
+                        Result = _orderProcessor.Create(Parameters)
+                            .Calculate(PlacedOrder);
                     }));
             }
         }
@@ -96,7 +97,7 @@ namespace WoodCutterCalculator.ViewModels
                     () =>
                     {
                         _stockWarehouseProcessor.Create(Parameters)
-                        .SeedStockWarehouse();
+                            .SeedStockWarehouse();
                     }));
             }
         }

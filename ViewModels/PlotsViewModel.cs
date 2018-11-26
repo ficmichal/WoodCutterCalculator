@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using System.Collections.ObjectModel;
 using WoodCutterCalculator.Models;
+using WoodCutterCalculator.Models.Plotter;
 using WoodCutterCalculator.ViewModels.Helpers;
 
 namespace WoodCutterCalculator.ViewModels
@@ -24,8 +25,7 @@ namespace WoodCutterCalculator.ViewModels
         public PlotsViewModel(IFrameNavigationService navigationService)
         {
             _navigationService = navigationService;
-            //Data = _navigationService.Parameter as Collection<CollectionDataValue>;
-            Data = new Collection<CollectionDataValue>(_navigationService.Parameter as Collection<CollectionDataValue>);
+            Data = Plotter.Plot(_navigationService.Parameter as double[]);
         }
 
         #endregion

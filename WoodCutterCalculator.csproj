@@ -104,7 +104,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\CollectionDataValue.cs" />
+    <Compile Include="Models\Plotter\CollectionDataValue.cs" />
     <Compile Include="Models\Enums\StockClassEnum.cs" />
     <Compile Include="Models\Enums\StockDetailsEnum.cs" />
     <Compile Include="Models\Enums\StockLengthEnum.cs" />
@@ -120,6 +120,7 @@
     <Compile Include="Models\OrderProcessor.cs" />
     <Compile Include="Models\Order\DetailsOfPlanks.cs" />
     <Compile Include="Models\Planks\PlanksToCut.cs" />
+    <Compile Include="Models\Plotter\Plotter.cs" />
     <Compile Include="Models\Stock\StockWarehouse.cs" />
     <Compile Include="Models\Stock\StockWarehouseProcessor.cs" />
     <Compile Include="Models\Utils\DescendingComparer.cs" />

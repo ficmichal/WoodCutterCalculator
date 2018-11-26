@@ -46,7 +46,7 @@ namespace WoodCutterCalculator.Models
             return this;
         }
 
-        public object Calculate(ICollection<int> placedOrder)
+        public double[] Calculate(ICollection<int> placedOrder)
         {
             var numberOfBigPacks = 10;
             var numberOfPlanksPerBigPack = PlanksInTheWarehouse.Length / numberOfBigPacks;
@@ -78,7 +78,7 @@ namespace WoodCutterCalculator.Models
 
             }
 
-            return new object();
+            return HistoryOfLearning;
         }
 
         private (double theBestSolutionOfOnePack, StockWarehouse theCuttedStocksOfOnePack) 
