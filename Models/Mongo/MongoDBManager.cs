@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MongoDB.Driver;
 using WoodCutterCalculator.Models.Managers;
 using WoodCutterCalculator.Models.Planks;
+using WoodCutterCalculator.Models.PlotDatas;
 
 namespace WoodCutterCalculator.Models.Mongo
 {
@@ -37,6 +34,9 @@ namespace WoodCutterCalculator.Models.Mongo
             }
         }
 
-        public IMongoCollection<PlanksToCut> PlanksToCut => _database.GetCollection<PlanksToCut>("PlanksToCut");
+        public IMongoCollection<PlanksToCut> PlanksToCut 
+            => _database.GetCollection<PlanksToCut>("PlanksToCut");
+        public IMongoCollection<HistoryOfLearningPlot> HistoryOfLearningPlot 
+            => _database.GetCollection<HistoryOfLearningPlot>("HistoryOfLearningPlot");
     }
 }

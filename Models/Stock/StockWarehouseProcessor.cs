@@ -1,23 +1,22 @@
-﻿using MongoDB.Driver;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using WoodCutterCalculator.Models.GeneticAlgorithm;
-using WoodCutterCalculator.Models.Mongo;
 using WoodCutterCalculator.Models.Planks;
+using WoodCutterCalculator.Repositories;
 
 namespace WoodCutterCalculator.Models.Stock
 {
     public class StockWarehouseProcessor
     {
-        private readonly IMongoDBManager _mongoDBManager;
+        private IPlanksToCutRepository _planksToCutRepository;
         private Random _randomNumber = new Random();
         public int[][] Planks;
         private GeneticAlgorithmParameters _parameters;
 
-        public StockWarehouseProcessor(IMongoDBManager mongoDBManager)
+        public StockWarehouseProcessor(IPlanksToCutRepository planksToCutRepository)
         {
-            _mongoDBManager = mongoDBManager;
+            _planksToCutRepository = planksToCutRepository;
         }
 
         public StockWarehouseProcessor Create(GeneticAlgorithmParameters parameters)
@@ -64,7 +63,15 @@ namespace WoodCutterCalculator.Models.Stock
                     }
                 }
             }
-            _mongoDBManager.PlanksToCut.InsertOne(new PlanksToCut { StartedCuttingDay = DateTime.UtcNow, Planks = Planks });
+            var now = DateTime.UtcNow.Date;
+            var numberOfCalculate = int.Parse(_planksToCutRepository.GetLastOrderInDay(now)?.OrderId?.Split('_')?.FirstOrDefault() ?? "0");
+            _planksToCutRepository.Add(
+            new PlanksToCut
+                {
+                    StartedCuttingDay = now,
+                    Planks = Planks,
+                    OrderId = $"{(++numberOfCalculate).ToString()}_{now.ToShortDateString()}"
+            });
         }
 
         private List<int> RandomListOfClass()

@@ -104,6 +104,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\PlotDatas\AllPlotDatas.cs" />
+    <Compile Include="Models\PlotDatas\HistoryOfLearningPlot.cs" />
     <Compile Include="Models\Plotter\CollectionDataValue.cs" />
     <Compile Include="Models\Enums\StockClassEnum.cs" />
     <Compile Include="Models\Enums\StockDetailsEnum.cs" />
@@ -125,6 +127,10 @@
     <Compile Include="Models\Stock\StockWarehouseProcessor.cs" />
     <Compile Include="Models\Utils\DescendingComparer.cs" />
     <Compile Include="Models\Utils\FitnessUtils.cs" />
+    <Compile Include="Repositories\HistoryOfLearningPlotRepository.cs" />
+    <Compile Include="Repositories\IHistoryOfLearningPlotRepository.cs" />
+    <Compile Include="Repositories\IPlanksToCutRepository.cs" />
+    <Compile Include="Repositories\PlanksToCutRepository.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MenuViewModel.cs" />
     <Compile Include="ViewModels\PlotsViewModel.cs" />

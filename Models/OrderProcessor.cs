@@ -1,26 +1,27 @@
-﻿using MongoDB.Driver;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using WoodCutterCalculator.Models.Enums;
 using WoodCutterCalculator.Models.Extensions;
 using WoodCutterCalculator.Models.GeneticAlgorithm;
-using WoodCutterCalculator.Models.Mongo;
 using WoodCutterCalculator.Models.Order;
+using WoodCutterCalculator.Models.PlotDatas;
 using WoodCutterCalculator.Models.Stock;
 using WoodCutterCalculator.Models.Utils;
+using WoodCutterCalculator.Repositories;
 
 namespace WoodCutterCalculator.Models
 {
     public class OrderProcessor
     {
-        private IMongoDBManager _mongoDBManager;
+        private IPlanksToCutRepository _planksToCutRepository;
         private Random _randomDouble =  new Random();
         private const int _lackOfPiecesThisClass = 0;
         private int _numberOfPossibleCutsPerPlank;
         private double _promotionRate;
         private GeneticAlgorithmParameters _algorithmParameters;
         private List<StockDetailsEnum> _possibleCuttedStocks;
+        private string _orderId;
 
         public int[][] PlanksInTheWarehouse { get; set; }
         public double[] HistoryOfLearning { get; set; }
@@ -29,24 +30,27 @@ namespace WoodCutterCalculator.Models
         public bool NeccesityOfChangeFitness { get; set; } = false;
         private IEnumerable<StockDetailsEnum> _classesOfNotEnoughCuttedStocks;
 
-        public OrderProcessor(IMongoDBManager mongoDBManager)
+        public OrderProcessor(IPlanksToCutRepository planksToCutRepository)
         {
-            _mongoDBManager = mongoDBManager;
+            _planksToCutRepository = planksToCutRepository;
         }
 
         public OrderProcessor Create(GeneticAlgorithmParameters algorithmParameters)
         {
-            PlanksInTheWarehouse = _mongoDBManager.PlanksToCut.AsQueryable().OrderByDescending(x => x.StartedCuttingDay).FirstOrDefault().Planks;
+            var lastAddedPlanksInTheWarehouse = _planksToCutRepository.GetLastAdded();
+            _orderId = lastAddedPlanksInTheWarehouse.OrderId;
+            PlanksInTheWarehouse = lastAddedPlanksInTheWarehouse.Planks;
+
             _algorithmParameters = algorithmParameters;
             _promotionRate = _algorithmParameters.PromotionRate;
             _numberOfPossibleCutsPerPlank = _algorithmParameters.LengthOfPlank - 1;
-            _possibleCuttedStocks = DetailsOfStocks.Prices.Keys.ToList();
             HistoryOfLearning = new double[_algorithmParameters.NumberOfIterations];
 
+            _possibleCuttedStocks = DetailsOfStocks.Prices.Keys.ToList();
             return this;
         }
 
-        public double[] Calculate(ICollection<int> placedOrder)
+        public AllPlotDatas Calculate(ICollection<int> placedOrder)
         {
             var numberOfBigPacks = 10;
             var numberOfPlanksPerBigPack = PlanksInTheWarehouse.Length / numberOfBigPacks;
@@ -78,7 +82,11 @@ namespace WoodCutterCalculator.Models
 
             }
 
-            return HistoryOfLearning;
+            return new AllPlotDatas
+            {
+                HistoryOfLearning = HistoryOfLearning,
+                OrderId = _orderId
+            };
         }
 
         private (double theBestSolutionOfOnePack, StockWarehouse theCuttedStocksOfOnePack) 

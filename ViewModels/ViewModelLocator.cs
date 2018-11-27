@@ -7,6 +7,7 @@ using WoodCutterCalculator.Models.GeneticAlgorithm;
 using WoodCutterCalculator.Models.Managers;
 using WoodCutterCalculator.Models.Mongo;
 using WoodCutterCalculator.Models.Stock;
+using WoodCutterCalculator.Repositories;
 using WoodCutterCalculator.ViewModels.Helpers;
 
 namespace WoodCutterCalculator.ViewModels
@@ -16,16 +17,20 @@ namespace WoodCutterCalculator.ViewModels
         static ViewModelLocator()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
-            //ViewModels
+            //Register ViewModels
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<MenuViewModel>();
             SimpleIoc.Default.Register<PlotsViewModel>();
-            //Processors
+            //Register Processors
             SimpleIoc.Default.Register<OrderProcessor>();
             SimpleIoc.Default.Register<StockWarehouseProcessor>();
-            //Managers
+            //Register Managers
             SimpleIoc.Default.Register<IMongoDBManager, MongoDBManager>();
             SimpleIoc.Default.Register<ISettingsManager, SettingsManager>();
+            //Register Repositories
+            SimpleIoc.Default.Register<IPlanksToCutRepository, PlanksToCutRepository>(); 
+            SimpleIoc.Default.Register<IHistoryOfLearningPlotRepository, HistoryOfLearningPlotRepository>();
+
             SetupNavigation();
         }
 

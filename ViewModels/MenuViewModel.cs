@@ -1,15 +1,8 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WoodCutterCalculator.Models;
 using WoodCutterCalculator.Models.GeneticAlgorithm;
-using WoodCutterCalculator.Models.Managers;
-using WoodCutterCalculator.Models.Mongo;
+using WoodCutterCalculator.Models.PlotDatas;
 using WoodCutterCalculator.Models.Stock;
 using WoodCutterCalculator.ViewModels.Helpers;
 
@@ -35,7 +28,7 @@ namespace WoodCutterCalculator.ViewModels
 
         #region Properties
 
-        public object Result { get; set; }
+        public AllPlotDatas Result { get; set; }
         public int[] PlacedOrder
         {
             get
