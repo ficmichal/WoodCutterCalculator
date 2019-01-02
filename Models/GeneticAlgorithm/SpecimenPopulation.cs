@@ -13,7 +13,7 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
         private int _sizeOfPopulation;
         private int _sizeOfSpecimen;
         private double _mutationRate;
-        private double _percentageOfChildrenFromPreviousGeneration;
+        private double _percentageOfElite;
         private double _percentageOfParentsChosenToSelection;
 
         public byte[] PackOfPlanks { get; set; } //Genom - One plank is 10-bit vector. This is pack of planks.
@@ -21,7 +21,7 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
 
         public SpecimenPopulation(GeneticAlgorithmParameters algorithmParameters)
         {
-            _percentageOfChildrenFromPreviousGeneration = algorithmParameters.PercentageOfChildrenFromPreviousGeneration;
+            _percentageOfElite = algorithmParameters.PercentageOfElite;
             _percentageOfParentsChosenToSelection = algorithmParameters.PercentageOfParentsChosenToSelection;
             _sizeOfPopulation = algorithmParameters.SizeOfPopulation;
             _sizeOfSpecimen = algorithmParameters.NumberOfPlanksPerPack * (algorithmParameters.LengthOfPlank - 1);
@@ -49,8 +49,8 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
         public void UpdatePopulation(SortedDictionary<double, int> specimenClassification)
         {
             var newPopulation = new byte[_sizeOfPopulation * _sizeOfSpecimen];
-            int numberOfChildrenFromParents = (int)(_sizeOfPopulation * _percentageOfChildrenFromPreviousGeneration) / 2;
-            int numberOfSurivorSpecimens = (int)((1.0 - _percentageOfChildrenFromPreviousGeneration) * _sizeOfPopulation);
+            int numberOfChildrenFromParents = (int)(_sizeOfPopulation * (1.0 - _percentageOfElite)) / 2;
+            int numberOfSurivorSpecimens = (int)(_percentageOfElite * _sizeOfPopulation);
 
             newPopulation = AddBestSpecimensFromPreviousPopulationToNextPopulation(newPopulation, specimenClassification, numberOfSurivorSpecimens);
             //crossover
@@ -60,7 +60,7 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
                     (numberOfSurivorSpecimens + 2 * i) * _sizeOfSpecimen, 2 * _sizeOfSpecimen);
             }
             //mutation
-            newPopulation = Mutate(newPopulation);
+            newPopulation = Mutate(newPopulation, numberOfSurivorSpecimens);
 
             Population = newPopulation;
         }
@@ -115,9 +115,9 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
             return crossoveredFirstSpecimen.Concat(crossoveredSecondSpecimen).ToArray();
         }
 
-        public byte[] Mutate(byte[] newPopulation)
+        public byte[] Mutate(byte[] newPopulation, int numberOfSurivorSpecimens)
         {
-            for (int i = 0; i < _sizeOfPopulation; i++)
+            for (int i = numberOfSurivorSpecimens; i < _sizeOfPopulation; i++)
             {
                 byte[] mutateSpecimen;
                 if (_randomNumber.NextDouble() < _mutationRate)
@@ -129,6 +129,11 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
             }
 
             return newPopulation;
+        }
+
+        public List<int> EliteOfSpecimens(SortedDictionary<double, int> specimenClassification)
+        {
+            return specimenClassification.Values.Take((int)(_percentageOfElite * _sizeOfPopulation)).ToList();
         }
 
         private byte[] MutateSpecimen(byte[] specimen, int index)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using WoodCutterCalculator.Models.Enums;
 using WoodCutterCalculator.Models.Extensions;
@@ -19,9 +20,11 @@ namespace WoodCutterCalculator.Models
         private const int _lackOfPiecesThisClass = 0;
         private int _numberOfPossibleCutsPerPlank;
         private double _promotionRate;
+        private double _percentageOfElite;
         private GeneticAlgorithmParameters _algorithmParameters;
         private List<StockDetailsEnum> _possibleCuttedStocks;
         private string _orderId;
+        private Stopwatch _recorderTimeOfAlgorithmExecuting;
 
         public int[][] PlanksInTheWarehouse { get; set; }
         public double[] HistoryOfLearning { get; set; }
@@ -29,6 +32,7 @@ namespace WoodCutterCalculator.Models
         public StockWarehouse AllCuttedStocks { get; set; } =  new StockWarehouse();
         public bool NeccesityOfChangeFitness { get; set; } = false;
         private IEnumerable<StockDetailsEnum> _classesOfNotEnoughCuttedStocks;
+        private SortedDictionary<double, int> ActualSpecimenClassification = new SortedDictionary<double, int>(new DescendingComparer<double>());
 
         public OrderProcessor(IPlanksToCutRepository planksToCutRepository)
         {
@@ -37,25 +41,29 @@ namespace WoodCutterCalculator.Models
 
         public OrderProcessor Create(GeneticAlgorithmParameters algorithmParameters)
         {
-            var lastAddedPlanksInTheWarehouse = _planksToCutRepository.GetLastAdded();
-            _orderId = lastAddedPlanksInTheWarehouse.OrderId;
-            PlanksInTheWarehouse = lastAddedPlanksInTheWarehouse.Planks;
+            var lastAddedPlanksInTheWarehouse = _planksToCutRepository?.GetLastAdded();
+            _orderId = lastAddedPlanksInTheWarehouse?.OrderId;
+            PlanksInTheWarehouse = lastAddedPlanksInTheWarehouse?.Planks;
 
             _algorithmParameters = algorithmParameters;
             _promotionRate = _algorithmParameters.PromotionRate;
+            _percentageOfElite = _algorithmParameters.PercentageOfElite;
             _numberOfPossibleCutsPerPlank = _algorithmParameters.LengthOfPlank - 1;
             HistoryOfLearning = new double[_algorithmParameters.NumberOfIterations];
 
             _possibleCuttedStocks = DetailsOfStocks.Prices.Keys.ToList();
+            _recorderTimeOfAlgorithmExecuting = new Stopwatch();
             return this;
         }
 
         public AllPlotDatas Calculate(ICollection<int> placedOrder)
         {
+            _recorderTimeOfAlgorithmExecuting.Start();
             var numberOfBigPacks = 10;
             var numberOfPlanksPerBigPack = PlanksInTheWarehouse.Length / numberOfBigPacks;
             var numberOfPlanksPerPack = _algorithmParameters.NumberOfPlanksPerPack;
             var countOfPlankPacks = numberOfPlanksPerBigPack / numberOfPlanksPerPack;
+            int[] cuttedStocks = new int[placedOrder.Count];
 
             var placedOrderDictionary = FitnessUtils.ConvertPlacedOrderToDictionary(placedOrder.ToArray());
             for (int i = 0; i < numberOfBigPacks; i++)
@@ -77,15 +85,18 @@ namespace WoodCutterCalculator.Models
 
                     //Add best solution of package to global best solution.
                     BestSolution += theBestSolutionOfOnePack;
+                    cuttedStocks = theCuttedStocksOfOnePack.CuttedStocks.Values.ToArray();
                     AllCuttedStocks.AddCuttedStocks(theCuttedStocksOfOnePack.CuttedStocks);
                 }
-
             }
+            _recorderTimeOfAlgorithmExecuting.Stop();
 
             return new AllPlotDatas
             {
                 HistoryOfLearning = HistoryOfLearning,
-                OrderId = _orderId
+                OrderId = _orderId,
+                HistogramData = new HistogramData { OrderedStocks = placedOrder.ToArray(), CuttedStocks = AllCuttedStocks.ConvertDictionaryToArray() },
+                AlgorithmParameters = new AlgorithmParameters(_algorithmParameters, _recorderTimeOfAlgorithmExecuting.ElapsedMilliseconds)
             };
         }
 
@@ -98,6 +109,7 @@ namespace WoodCutterCalculator.Models
             var firstIteration = FindBestSolutionInCurrentPopulation(population, packOfPlanks);
             var theBestSolutionOfOnePack = firstIteration.bestSolutionOfOnePack;
             var theCuttedStocksOfOnePack = firstIteration.cuttedStocksOfOnePack;
+
             population.UpdatePopulation(firstIteration.specimenClassification);
 
             for (int j = 0; j < numberOfIterations; j++)

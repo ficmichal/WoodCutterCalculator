@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using System.Collections.ObjectModel;
 using WoodCutterCalculator.Models;
 using WoodCutterCalculator.Models.GeneticAlgorithm;
 using WoodCutterCalculator.Models.PlotDatas;
@@ -17,7 +18,7 @@ namespace WoodCutterCalculator.ViewModels
         private StockWarehouseProcessor _stockWarehouseProcessor;
 
         private GeneticAlgorithmParameters _parameters;
-        private int[] _placedOrder;
+        private ObservableCollection<int> _placedOrder;
 
         private RelayCommand _goToPlotsCommand;
         private RelayCommand _startCalculations;
@@ -29,7 +30,7 @@ namespace WoodCutterCalculator.ViewModels
         #region Properties
 
         public AllPlotDatas Result { get; set; }
-        public int[] PlacedOrder
+        public ObservableCollection<int> PlacedOrder
         {
             get
             {
@@ -120,7 +121,7 @@ namespace WoodCutterCalculator.ViewModels
             _stockWarehouseProcessor = stockWarehouseProcessor;
 
             Parameters = new GeneticAlgorithmParameters();
-            PlacedOrder = new int[9] { 10, 20, 30, 10, 20, 30, 10, 20, 30 };
+            PlacedOrder = new ObservableCollection<int> { 10, 20, 30, 10, 20, 30, 10, 20, 30 };
         }
 
         #endregion

@@ -29,7 +29,7 @@ namespace WoodCutterCalculator.ViewModels
             SimpleIoc.Default.Register<ISettingsManager, SettingsManager>();
             //Register Repositories
             SimpleIoc.Default.Register<IPlanksToCutRepository, PlanksToCutRepository>(); 
-            SimpleIoc.Default.Register<IHistoryOfLearningPlotRepository, HistoryOfLearningPlotRepository>();
+            SimpleIoc.Default.Register<IAllPlotDatasRepository, AllPlotDatasRepository>();
 
             SetupNavigation();
         }

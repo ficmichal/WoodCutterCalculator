@@ -9,25 +9,24 @@
       d:DesignHeight="720" d:DesignWidth="1280"
       Background="AntiqueWhite"
       Title="Plots"
-      DataContext="{Binding Path=PlotsViewModel,Source={StaticResource Locator}}"
-      >
+      DataContext="{Binding Path=PlotsViewModel,Source={StaticResource Locator}}">
 
     <Grid>
-        <oxy:Plot x:Name="plot1" 
-                  Title="Texas Instruments TMP102 Temperature Sensor" 
-                  Margin="94,10,78,10">
+        <oxy:Plot x:Name="fitnessFunction" 
+                  Title="Funkcja celu" 
+                  Margin="10,10,646,278">
             <oxy:Plot.Axes>
-                <oxy:LinearAxis Title="Sample number" 
+                <oxy:LinearAxis Title="Iteracje" 
                                 Position="Bottom" 
                                 MajorGridlineStyle="Solid" 
-                                MinorGridlineStyle="Solid" 
+                                MinorGridlineStyle="None" 
                                 MinimumPadding="0" 
                                 MaximumPadding="0"/>
-                <oxy:LinearAxis Title="Temperature [°C]" 
+                <oxy:LinearAxis Title="Zysk" 
                                 Position="Left" 
                                 MajorGridlineStyle="Solid" 
-                                MinorGridlineStyle="Solid"
-                                TickStyle="Outside" />
+                                MinorGridlineStyle="None"
+                                TickStyle="Inside" />
             </oxy:Plot.Axes>
             <oxy:Plot.Series>
                 <oxy:LineSeries
@@ -36,8 +35,40 @@
                     DataFieldY="YData"
                     MarkerSize="3"
                     MarkerType="Plus"
+                    Color="Red"
                     />
             </oxy:Plot.Series>
         </oxy:Plot>
+        <oxy:Plot x:Name="cuttedStocks" 
+                  Title="Przegląd zamówienia" 
+                  Margin="678,10,10,278" LegendPlacement="Inside" LegendPosition="RightTop" LegendOrientation="Vertical">
+            <oxy:Plot.Axes>
+                <oxy:CategoryAxis Title="Rodzaje klepek" Position="Bottom" ItemsSource="{Binding StocksData}" LabelField="KindOfStock"/>
+                <oxy:LinearAxis Title="Liczba klepek" Position="Left" TickStyle="None" />
+            </oxy:Plot.Axes>
+            <oxy:Plot.Series>
+                <oxy:ColumnSeries Title="Zamówione klepki" ItemsSource="{Binding StocksData}" ValueField="OrderedStock" Color="Red"/>
+                <oxy:ColumnSeries Title="Wycięte klepki" ItemsSource="{Binding StocksData}" ValueField="CuttedStock" Color="Blue"/>
+            </oxy:Plot.Series>
+        </oxy:Plot>
+        <Label Content="Parametry algorytmu:" FontSize="22" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="197,513,0,0" VerticalAlignment="Top" Height="46" Width="221"/>
+        <Label Content="Czas wykonywania:" HorizontalAlignment="Left" Margin="35,559,0,0" VerticalAlignment="Top" Height="27" Width="108"/>
+        <Label Content="{Binding UsedAlgorithmParameters.TimeOfExecuting}" HorizontalAlignment="Left" Margin="175,559,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="Liczba desek w paczce:" HorizontalAlignment="Left" Margin="35,591,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
+        <Label Content="{Binding UsedAlgorithmParameters.NumberOfPlanksPerPack}" HorizontalAlignment="Left" Margin="175,591,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="Wielkość populacji:" HorizontalAlignment="Left" Margin="35,623,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
+        <Label Content="{Binding UsedAlgorithmParameters.SizeOfPopulation}" HorizontalAlignment="Left" Margin="175,623,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="Liczba iteracji:" HorizontalAlignment="Left" Margin="35,655,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
+        <Label Content="{Binding UsedAlgorithmParameters.NumberOfIterations}" HorizontalAlignment="Left" Margin="175,655,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-0.833,3.396" FontWeight="Bold"/>
+        <Label Content="Wielkość elity:" HorizontalAlignment="Left" Margin="440,559,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
+        <Label Content="{Binding UsedAlgorithmParameters.PercentageOfElite}" HorizontalAlignment="Left" Margin="580,559,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="Reprodukowane osobniki:" HorizontalAlignment="Left" Margin="440,591,0,0" VerticalAlignment="Top" Height="27" Width="154"/>
+        <Label Content="{Binding UsedAlgorithmParameters.PercentageOfParentsChosenToSelection}" HorizontalAlignment="Left" Margin="580,591,0,0" VerticalAlignment="Top" Height="27" Width="40" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="Współczynnik mutacji:" HorizontalAlignment="Left" Margin="440,623,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
+        <Label Content="{Binding UsedAlgorithmParameters.MutationRate}" HorizontalAlignment="Left" Margin="580,623,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="Mnożnik premiujący:" HorizontalAlignment="Left" Margin="440,655,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
+        <Label Content="{Binding UsedAlgorithmParameters.PromotionRate}" HorizontalAlignment="Left" Margin="580,655,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="Największy zysk:" Foreground="Red" FontSize="18" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="189,447,0,0" VerticalAlignment="Top" Height="46" Width="221"/>
+        <Label Content="{Binding BestSolution}" Foreground="Red" FontSize="18" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="346,447,0,0" VerticalAlignment="Top" Height="46" Width="103" FontWeight="Bold"/>
     </Grid>
 </Page>

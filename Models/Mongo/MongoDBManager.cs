@@ -36,7 +36,8 @@ namespace WoodCutterCalculator.Models.Mongo
 
         public IMongoCollection<PlanksToCut> PlanksToCut 
             => _database.GetCollection<PlanksToCut>("PlanksToCut");
-        public IMongoCollection<HistoryOfLearningPlot> HistoryOfLearningPlot 
-            => _database.GetCollection<HistoryOfLearningPlot>("HistoryOfLearningPlot");
+
+        public IMongoCollection<AllPlotDatas> AllPlotDatas
+            => _database.GetCollection<AllPlotDatas>("AllPlotDatas");
     }
 }

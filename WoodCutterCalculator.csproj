@@ -63,14 +63,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\newtonsoft.json\9.0.1\lib\netstandard1.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="OxyPlot, Version=2011.3.4094.38386, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
-      <HintPath>packages\OxyPlot.Wpf.2011.3.4094\lib\OxyPlot.dll</HintPath>
+    <Reference Include="OxyPlot, Version=1.0.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
+      <HintPath>packages\OxyPlot.Core.1.0.0\lib\net45\OxyPlot.dll</HintPath>
     </Reference>
-    <Reference Include="OxyPlot.Extensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\oxyplot-extensions.1.0.13\lib\net45\OxyPlot.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="OxyPlot.Wpf, Version=2011.3.4094.38387, Culture=neutral, PublicKeyToken=75e952ba404cdbb0, processorArchitecture=MSIL">
-      <HintPath>packages\OxyPlot.Wpf.2011.3.4094\lib\OxyPlot.Wpf.dll</HintPath>
+    <Reference Include="OxyPlot.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=75e952ba404cdbb0, processorArchitecture=MSIL">
+      <HintPath>packages\OxyPlot.Wpf.1.0.0\lib\net45\OxyPlot.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -104,7 +101,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Models\Extensions\EnumerationExtensions.cs" />
+    <Compile Include="Models\PlotDatas\AlgorithmParameters.cs" />
     <Compile Include="Models\PlotDatas\AllPlotDatas.cs" />
+    <Compile Include="Models\PlotDatas\HistogramData.cs" />
     <Compile Include="Models\PlotDatas\HistoryOfLearningPlot.cs" />
     <Compile Include="Models\Plotter\CollectionDataValue.cs" />
     <Compile Include="Models\Enums\StockClassEnum.cs" />
@@ -122,15 +123,19 @@
     <Compile Include="Models\OrderProcessor.cs" />
     <Compile Include="Models\Order\DetailsOfPlanks.cs" />
     <Compile Include="Models\Planks\PlanksToCut.cs" />
+    <Compile Include="Models\Plotter\HistogramDataValues.cs" />
+    <Compile Include="Models\Plotter\HistogramPlotter.cs" />
     <Compile Include="Models\Plotter\Plotter.cs" />
     <Compile Include="Models\Stock\StockWarehouse.cs" />
     <Compile Include="Models\Stock\StockWarehouseProcessor.cs" />
     <Compile Include="Models\Utils\DescendingComparer.cs" />
     <Compile Include="Models\Utils\FitnessUtils.cs" />
-    <Compile Include="Repositories\HistoryOfLearningPlotRepository.cs" />
-    <Compile Include="Repositories\IHistoryOfLearningPlotRepository.cs" />
+    <Compile Include="Models\Utils\StockDescriptionUtils.cs" />
+    <Compile Include="Repositories\AllPlotDatasRepository.cs" />
+    <Compile Include="Repositories\IAllPlotDatasRepository.cs" />
     <Compile Include="Repositories\IPlanksToCutRepository.cs" />
     <Compile Include="Repositories\PlanksToCutRepository.cs" />
+    <Compile Include="ViewModels\HistoryPanelViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MenuViewModel.cs" />
     <Compile Include="ViewModels\PlotsViewModel.cs" />

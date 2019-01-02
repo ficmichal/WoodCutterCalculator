@@ -10,5 +10,7 @@ namespace WoodCutterCalculator.Models.PlotDatas
     {
         public string OrderId { get; set; }
         public double[] HistoryOfLearning { get; set; }
+        public HistogramData HistogramData { get; set; }
+        public AlgorithmParameters AlgorithmParameters { get; set; }
     }
 }
