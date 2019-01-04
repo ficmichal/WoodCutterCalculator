@@ -176,7 +176,7 @@ namespace WoodCutterCalculator.ViewModels
             _stockWarehouseProcessor = stockWarehouseProcessor;
 
             Parameters = new GeneticAlgorithmParameters(10, 30, 60, 0.1, 0.1, 20, 0.8, 6);
-            PlacedOrder = new ObservableCollection<int> { 10, 20, 30, 10, 20, 30, 10, 20, 30 };
+            PlacedOrder = new ObservableCollection<int> { 30, 20, 10, 30, 20, 10, 30, 20, 10 };
         }
 
         #endregion

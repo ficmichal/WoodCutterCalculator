@@ -41,10 +41,10 @@ namespace WoodCutterCalculator.Models
 
         public OrderProcessor Create(GeneticAlgorithmParameters algorithmParameters, string idOfOrderToPlot = null)
         {
-            var lastAddedPlanksInTheWarehouse = idOfOrderToPlot != null ? _planksToCutRepository.GetByOrderId(idOfOrderToPlot) ??
+            var planksInTheWarehouse = idOfOrderToPlot != null ? _planksToCutRepository.GetByOrderId(idOfOrderToPlot) ??
                 _planksToCutRepository?.GetLastAdded() : _planksToCutRepository?.GetLastAdded();
-            _orderId = lastAddedPlanksInTheWarehouse?.OrderId;
-            PlanksInTheWarehouse = lastAddedPlanksInTheWarehouse?.Planks;
+            _orderId = planksInTheWarehouse?.OrderId;
+            PlanksInTheWarehouse = planksInTheWarehouse?.Planks;
 
             _algorithmParameters = algorithmParameters;
             _promotionRate = _algorithmParameters.PromotionRate;
@@ -60,7 +60,7 @@ namespace WoodCutterCalculator.Models
         public AllPlotDatas Calculate(ICollection<int> placedOrder, bool picturedMode = false)
         {
             _recorderTimeOfAlgorithmExecuting.Start();
-            var numberOfBigPacks = 1;
+            var numberOfBigPacks = 10;
             var numberOfPlanksPerBigPack = PlanksInTheWarehouse.Length / numberOfBigPacks;
             var numberOfPlanksPerPack = _algorithmParameters.NumberOfPlanksPerPack;
             var countOfPlankPacks = numberOfPlanksPerBigPack / numberOfPlanksPerPack;
@@ -112,7 +112,8 @@ namespace WoodCutterCalculator.Models
                     HistoryOfLearning = HistoryOfLearning,
                     OrderId = _orderId,
                     HistogramData = new HistogramData { OrderedStocks = placedOrder.ToArray(), CuttedStocks = AllCuttedStocks.ConvertDictionaryToArray() },
-                    AlgorithmParameters = new AlgorithmParameters(_algorithmParameters, _recorderTimeOfAlgorithmExecuting.ElapsedMilliseconds)
+                    AlgorithmParameters = new AlgorithmParameters(_algorithmParameters, _recorderTimeOfAlgorithmExecuting.ElapsedMilliseconds),
+                    NumberOfCuttedPlanks = PlanksInTheWarehouse.Length
                 };
             }
             else
@@ -123,8 +124,9 @@ namespace WoodCutterCalculator.Models
                     HistoryOfLearning = HistoryOfLearning,
                     OrderId = _orderId,
                     HistogramData = new HistogramData { OrderedStocks = placedOrder.ToArray(), CuttedStocks = AllCuttedStocks.ConvertDictionaryToArray() },
-                    AlgorithmParameters = new AlgorithmParameters(_algorithmParameters, _recorderTimeOfAlgorithmExecuting.ElapsedMilliseconds)
-                };
+                    AlgorithmParameters = new AlgorithmParameters(_algorithmParameters, _recorderTimeOfAlgorithmExecuting.ElapsedMilliseconds),
+                    NumberOfCuttedPlanks = PlanksInTheWarehouse.Length
+            };
             }
         }
 
@@ -230,7 +232,14 @@ namespace WoodCutterCalculator.Models
                     bestPackOfCuttedStock = packOfCuttedStock;
                 }
                 //Add genotype and its fenotype to sorted specimen dictionary
-                ClassifyTheSpecimens(specimenClassification, valueOfPack, i);
+                if (_classesOfNotEnoughCuttedStocks.Count() > 0)
+                {
+                    ClassifyTheSpecimens(specimenClassification, promotedValueOfPack, i);
+                }
+                else
+                {
+                    ClassifyTheSpecimens(specimenClassification, valueOfPack, i);
+                }
             }
 
             return (bestSolutionInPackOfPlanks, bestPackOfCuttedStock, specimenClassification);
@@ -397,7 +406,12 @@ namespace WoodCutterCalculator.Models
         {
             if (specimenClassification.Keys.Contains(valueOfPack))
             {
-                specimenClassification.Add(valueOfPack + _randomDouble.NextDouble(), index);
+                var tempValueOfPack = valueOfPack + _randomDouble.NextDouble();
+                while (specimenClassification.Keys.Contains(tempValueOfPack))
+                {
+                    tempValueOfPack = valueOfPack + _randomDouble.NextDouble();
+                }
+                specimenClassification.Add(tempValueOfPack, index);
             }
             else
             {

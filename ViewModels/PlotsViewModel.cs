@@ -21,6 +21,7 @@ namespace WoodCutterCalculator.ViewModels
 
         private double _bestSolution;
         private int _uselessStocks;
+        private int _cuttedPlanks;
 
         #endregion
 
@@ -68,6 +69,25 @@ namespace WoodCutterCalculator.ViewModels
             }
         }
 
+        public int CuttedPlanks
+        {
+            get
+            {
+                return _cuttedPlanks;
+            }
+
+            set
+            {
+                if (_cuttedPlanks == value)
+                {
+                    return;
+                }
+
+                _cuttedPlanks = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public RelayCommand GoBackToMenu
         {
             get
@@ -96,6 +116,7 @@ namespace WoodCutterCalculator.ViewModels
             UsedAlgorithmParameters = allPlotDatas.AlgorithmParameters;
             BestSolution = allPlotDatas.HistoryOfLearning.ToList().Max();
             UselessStocks = allPlotDatas.HistogramData.CuttedStocks.Last();
+            CuttedPlanks = allPlotDatas.NumberOfCuttedPlanks;
 
             SavePlots(allPlotDatas);
         }

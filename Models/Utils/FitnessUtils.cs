@@ -11,15 +11,15 @@ namespace WoodCutterCalculator.Models.Utils
         {
             var changingFitnessDictionary = new Dictionary<StockDetailsEnum, bool>
             {
-                { StockDetailsEnum.FirstClassStock40, false },
-                { StockDetailsEnum.FirstClassStock30, false },
                 { StockDetailsEnum.FirstClassStock20, false },
-                { StockDetailsEnum.SecondClassStock40, false },
-                { StockDetailsEnum.SecondClassStock30, false },
+                { StockDetailsEnum.FirstClassStock30, false },
+                { StockDetailsEnum.FirstClassStock40, false },
                 { StockDetailsEnum.SecondClassStock20, false },
-                { StockDetailsEnum.ThirdClassStock40, false },
+                { StockDetailsEnum.SecondClassStock30, false },
+                { StockDetailsEnum.SecondClassStock40, false },
+                { StockDetailsEnum.ThirdClassStock20, false },
                 { StockDetailsEnum.ThirdClassStock30, false },
-                { StockDetailsEnum.ThirdClassStock20, false }
+                { StockDetailsEnum.ThirdClassStock40, false }
             };
 
             var keys = alreadyCuttedStocks.Keys.ToArray();
@@ -41,15 +41,15 @@ namespace WoodCutterCalculator.Models.Utils
         {
             var placedOrderDictionary = new Dictionary<StockDetailsEnum, int>
             {
-                { StockDetailsEnum.FirstClassStock40, 0 },
-                { StockDetailsEnum.FirstClassStock30, 0 },
                 { StockDetailsEnum.FirstClassStock20, 0 },
-                { StockDetailsEnum.SecondClassStock40, 0 },
-                { StockDetailsEnum.SecondClassStock30, 0 },
+                { StockDetailsEnum.FirstClassStock30, 0 },
+                { StockDetailsEnum.FirstClassStock40, 0 },
                 { StockDetailsEnum.SecondClassStock20, 0 },
-                { StockDetailsEnum.ThirdClassStock40, 0 },
+                { StockDetailsEnum.SecondClassStock30, 0 },
+                { StockDetailsEnum.SecondClassStock40, 0 },
+                { StockDetailsEnum.ThirdClassStock20, 0 },
                 { StockDetailsEnum.ThirdClassStock30, 0 },
-                { StockDetailsEnum.ThirdClassStock20, 0 }
+                { StockDetailsEnum.ThirdClassStock40, 0 }
             };
 
             var placedOrderKeys = placedOrderDictionary.Keys.ToArray();
