@@ -13,6 +13,7 @@ namespace WoodCutterCalculator.Repositories
         Task<PlanksToCut> GetByDateAsync(DateTime date);
         PlanksToCut GetLastOrderInDay(DateTime date);
         PlanksToCut GetLastAdded();
+        PlanksToCut GetByOrderId(string orderId);
         Task<IEnumerable<PlanksToCut>> FindAsync(Expression<Func<PlanksToCut, bool>> predicate);
         Task AddAsync(PlanksToCut entity);
         void Add(PlanksToCut entity);

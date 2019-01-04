@@ -23,7 +23,10 @@ namespace WoodCutterCalculator.ViewModels
         private RelayCommand _goToPlotsCommand;
         private RelayCommand _startCalculations;
         private RelayCommand _fillPlankWarehouse;
+        private RelayCommand _goToPicturedStocks;
 
+        private int _sizeOfWarehouse;
+        private string _idOfOrderToPlot;
 
         #endregion
 
@@ -68,6 +71,44 @@ namespace WoodCutterCalculator.ViewModels
             }
         }
 
+        public int SizeOfWarehouse
+        {
+            get
+            {
+                return _sizeOfWarehouse;
+            }
+
+            set
+            {
+                if (_sizeOfWarehouse == value)
+                {
+                    return;
+                }
+
+                _sizeOfWarehouse = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public string IdOfOrderToPlot
+        {
+            get
+            {
+                return _idOfOrderToPlot;
+            }
+
+            set
+            {
+                if (_idOfOrderToPlot == value)
+                {
+                    return;
+                }
+
+                _idOfOrderToPlot = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public RelayCommand StartCalculations
         {
             get
@@ -76,7 +117,7 @@ namespace WoodCutterCalculator.ViewModels
                     ?? (_startCalculations = new RelayCommand(
                     () =>
                     {
-                        Result = _orderProcessor.Create(Parameters)
+                        Result = _orderProcessor.Create(Parameters, IdOfOrderToPlot)
                             .Calculate(PlacedOrder);
                     }));
             }
@@ -90,7 +131,7 @@ namespace WoodCutterCalculator.ViewModels
                     ?? (_fillPlankWarehouse = new RelayCommand(
                     () =>
                     {
-                        _stockWarehouseProcessor.Create(Parameters)
+                        _stockWarehouseProcessor.Create(Parameters, SizeOfWarehouse)
                             .SeedStockWarehouse();
                     }));
             }
@@ -109,6 +150,20 @@ namespace WoodCutterCalculator.ViewModels
             }
         }
 
+        public RelayCommand GoToPicturedStocks
+        {
+            get
+            {
+                return _goToPicturedStocks
+                    ?? (_goToPicturedStocks = new RelayCommand(
+                    () =>
+                    {
+                        Result = _orderProcessor.Create(Parameters).Calculate(PlacedOrder, true);
+                        _navigationService.NavigateTo("CuttedStocks", Result);
+                    }));
+            }
+        }
+
         #endregion
 
         #region Constructor
@@ -120,7 +175,7 @@ namespace WoodCutterCalculator.ViewModels
             _orderProcessor = orderProcessor;
             _stockWarehouseProcessor = stockWarehouseProcessor;
 
-            Parameters = new GeneticAlgorithmParameters();
+            Parameters = new GeneticAlgorithmParameters(10, 30, 60, 0.1, 0.1, 20, 0.8, 6);
             PlacedOrder = new ObservableCollection<int> { 10, 20, 30, 10, 20, 30, 10, 20, 30 };
         }
 

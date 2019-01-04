@@ -9,7 +9,7 @@
     mc:Ignorable="d"
     ResizeMode="NoResize"
     Title="Wood Cutter Calculator" 
-    Width="1280" Height="720" 
+    Width="1280" Height="755" 
     WindowStartupLocation="CenterScreen"
     DataContext="{Binding Path=MainViewModel, Source={StaticResource Locator}}"
     >

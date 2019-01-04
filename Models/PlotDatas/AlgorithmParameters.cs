@@ -1,5 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
+using System;
 using WoodCutterCalculator.Models.GeneticAlgorithm;
+using WoodCutterCalculator.Models.Utils;
 
 namespace WoodCutterCalculator.Models.PlotDatas
 {
@@ -12,9 +14,9 @@ namespace WoodCutterCalculator.Models.PlotDatas
         private int _numberOfIterations;
         private string _timeOfExecuting;
         private double _promotionRate;
-        private double _mutationRate;
-        private double _percentageOfElite;
-        private double _percentageOfParentsChosenToSelection;
+        private string _mutationRate;
+        private string _percentageOfElite;
+        private string _percentageOfParentsChosenToSelection;
 
         #endregion
 
@@ -115,7 +117,7 @@ namespace WoodCutterCalculator.Models.PlotDatas
             }
         }
 
-        public double MutationRate
+        public string MutationRate
         {
             get
             {
@@ -134,7 +136,7 @@ namespace WoodCutterCalculator.Models.PlotDatas
             }
         }
 
-        public double PercentageOfElite
+        public string PercentageOfElite
         {
             get
             {
@@ -153,7 +155,7 @@ namespace WoodCutterCalculator.Models.PlotDatas
             }
         }
 
-        public double PercentageOfParentsChosenToSelection
+        public string PercentageOfParentsChosenToSelection
         {
             get
             {
@@ -179,11 +181,11 @@ namespace WoodCutterCalculator.Models.PlotDatas
             NumberOfIterations = algorithmParameters.NumberOfIterations;
             NumberOfPlanksPerPack = algorithmParameters.NumberOfPlanksPerPack;
             SizeOfPopulation = algorithmParameters.SizeOfPopulation;
-            PercentageOfElite = algorithmParameters.PercentageOfElite;
-            PercentageOfParentsChosenToSelection = algorithmParameters.PercentageOfParentsChosenToSelection;
-            MutationRate = algorithmParameters.MutationRate;
+            PercentageOfElite = MathUtils.PrintAsPercent(algorithmParameters.PercentageOfElite);
+            PercentageOfParentsChosenToSelection = MathUtils.PrintAsPercent(algorithmParameters.PercentageOfParentsChosenToSelection);
+            MutationRate = MathUtils.PrintAsPercent(algorithmParameters.MutationRate);
             PromotionRate = algorithmParameters.PromotionRate;
-            TimeOfExecuting = timeOfExecuting.ToString() + "ms";
+            TimeOfExecuting = TimeUtils.PrintTimeSpan(timeOfExecuting);
         }
 
         public override bool Equals(object obj)

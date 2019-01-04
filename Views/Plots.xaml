@@ -11,7 +11,22 @@
       Title="Plots"
       DataContext="{Binding Path=PlotsViewModel,Source={StaticResource Locator}}">
 
+    <Page.Resources>
+        <ResourceDictionary>
+            <x:Array Type="Color" x:Key="HistogramColors">
+                <Color>#4c72b0</Color>
+                <Color>#55a868</Color>
+                <Color>#c44e52</Color>
+                <Color>#8172b2</Color>
+                <Color>#ccb974</Color>
+                <Color>#64b5cd</Color>
+            </x:Array>
+        </ResourceDictionary>
+    </Page.Resources>
     <Grid>
+        <Canvas>
+            <Button Command="{Binding GoBackToMenu}" Content="Powrót do menu" BorderBrush="AntiqueWhite" Foreground="AntiqueWhite" Background="AntiqueWhite" FontSize="12" Canvas.Left="1179" Canvas.Top="533"/>
+        </Canvas>
         <oxy:Plot x:Name="fitnessFunction" 
                   Title="Funkcja celu" 
                   Margin="10,10,646,278">
@@ -41,34 +56,37 @@
         </oxy:Plot>
         <oxy:Plot x:Name="cuttedStocks" 
                   Title="Przegląd zamówienia" 
-                  Margin="678,10,10,278" LegendPlacement="Inside" LegendPosition="RightTop" LegendOrientation="Vertical">
+                  Margin="678,10,10,278" LegendPlacement="Outside" LegendPosition="RightTop" LegendOrientation="Vertical"
+                  DefaultColors="{StaticResource HistogramColors}">
             <oxy:Plot.Axes>
-                <oxy:CategoryAxis Title="Rodzaje klepek" Position="Bottom" ItemsSource="{Binding StocksData}" LabelField="KindOfStock"/>
+                <oxy:CategoryAxis Title="Rodzaj klepki - (Klasa - długość)" Position="Bottom" ItemsSource="{Binding StocksData}" LabelField="KindOfStock"/>
                 <oxy:LinearAxis Title="Liczba klepek" Position="Left" TickStyle="None" />
             </oxy:Plot.Axes>
             <oxy:Plot.Series>
-                <oxy:ColumnSeries Title="Zamówione klepki" ItemsSource="{Binding StocksData}" ValueField="OrderedStock" Color="Red"/>
-                <oxy:ColumnSeries Title="Wycięte klepki" ItemsSource="{Binding StocksData}" ValueField="CuttedStock" Color="Blue"/>
+                <oxy:ColumnSeries Title="Zamówione" ItemsSource="{Binding StocksData}" ValueField="OrderedStock" Color="Red"/>
+                <oxy:ColumnSeries Title="Wycięte" ItemsSource="{Binding StocksData}" ValueField="CuttedStock" Color="Blue"/>
             </oxy:Plot.Series>
         </oxy:Plot>
         <Label Content="Parametry algorytmu:" FontSize="22" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="197,513,0,0" VerticalAlignment="Top" Height="46" Width="221"/>
         <Label Content="Czas wykonywania:" HorizontalAlignment="Left" Margin="35,559,0,0" VerticalAlignment="Top" Height="27" Width="108"/>
-        <Label Content="{Binding UsedAlgorithmParameters.TimeOfExecuting}" HorizontalAlignment="Left" Margin="175,559,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="{Binding UsedAlgorithmParameters.TimeOfExecuting}" HorizontalAlignment="Left" Margin="175,559,0,0" VerticalAlignment="Top" Height="27" Width="86"  FontWeight="Bold"/>
         <Label Content="Liczba desek w paczce:" HorizontalAlignment="Left" Margin="35,591,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
-        <Label Content="{Binding UsedAlgorithmParameters.NumberOfPlanksPerPack}" HorizontalAlignment="Left" Margin="175,591,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="{Binding UsedAlgorithmParameters.NumberOfPlanksPerPack}" HorizontalAlignment="Left" Margin="175,591,0,0" VerticalAlignment="Top" Height="27" Width="54"  FontWeight="Bold"/>
         <Label Content="Wielkość populacji:" HorizontalAlignment="Left" Margin="35,623,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
-        <Label Content="{Binding UsedAlgorithmParameters.SizeOfPopulation}" HorizontalAlignment="Left" Margin="175,623,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="{Binding UsedAlgorithmParameters.SizeOfPopulation}" HorizontalAlignment="Left" Margin="175,623,0,0" VerticalAlignment="Top" Height="27" Width="54"  FontWeight="Bold"/>
         <Label Content="Liczba iteracji:" HorizontalAlignment="Left" Margin="35,655,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
-        <Label Content="{Binding UsedAlgorithmParameters.NumberOfIterations}" HorizontalAlignment="Left" Margin="175,655,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-0.833,3.396" FontWeight="Bold"/>
+        <Label Content="{Binding UsedAlgorithmParameters.NumberOfIterations}" HorizontalAlignment="Left" Margin="175,655,0,0" VerticalAlignment="Top" Height="27" Width="54" FontWeight="Bold"/>
         <Label Content="Wielkość elity:" HorizontalAlignment="Left" Margin="440,559,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
-        <Label Content="{Binding UsedAlgorithmParameters.PercentageOfElite}" HorizontalAlignment="Left" Margin="580,559,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="{Binding UsedAlgorithmParameters.PercentageOfElite}" HorizontalAlignment="Left" Margin="580,559,0,0" VerticalAlignment="Top" Height="27" Width="54"  FontWeight="Bold"/>
         <Label Content="Reprodukowane osobniki:" HorizontalAlignment="Left" Margin="440,591,0,0" VerticalAlignment="Top" Height="27" Width="154"/>
-        <Label Content="{Binding UsedAlgorithmParameters.PercentageOfParentsChosenToSelection}" HorizontalAlignment="Left" Margin="580,591,0,0" VerticalAlignment="Top" Height="27" Width="40" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="{Binding UsedAlgorithmParameters.PercentageOfParentsChosenToSelection}" HorizontalAlignment="Left" Margin="580,591,0,0" VerticalAlignment="Top" Height="27" Width="40"  FontWeight="Bold"/>
         <Label Content="Współczynnik mutacji:" HorizontalAlignment="Left" Margin="440,623,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
-        <Label Content="{Binding UsedAlgorithmParameters.MutationRate}" HorizontalAlignment="Left" Margin="580,623,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="{Binding UsedAlgorithmParameters.MutationRate}" HorizontalAlignment="Left" Margin="580,623,0,0" VerticalAlignment="Top" Height="27" Width="54"  FontWeight="Bold"/>
         <Label Content="Mnożnik premiujący:" HorizontalAlignment="Left" Margin="440,655,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
-        <Label Content="{Binding UsedAlgorithmParameters.PromotionRate}" HorizontalAlignment="Left" Margin="580,655,0,0" VerticalAlignment="Top" Height="27" Width="54" RenderTransformOrigin="-1.274,0.667" FontWeight="Bold"/>
+        <Label Content="{Binding UsedAlgorithmParameters.PromotionRate}" HorizontalAlignment="Left" Margin="580,655,0,0" VerticalAlignment="Top" Height="27" Width="54"  FontWeight="Bold"/>
         <Label Content="Największy zysk:" Foreground="Red" FontSize="18" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="189,447,0,0" VerticalAlignment="Top" Height="46" Width="221"/>
         <Label Content="{Binding BestSolution}" Foreground="Red" FontSize="18" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="346,447,0,0" VerticalAlignment="Top" Height="46" Width="103" FontWeight="Bold"/>
+        <Label Content="Ilosć odpadu:" Foreground="Red" FontSize="18" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="871,447,0,0" VerticalAlignment="Top" Height="46" Width="221"/>
+        <Label Content="{Binding UselessStocks}" Foreground="Red" FontSize="18" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="1028,447,0,0" VerticalAlignment="Top" Height="46" Width="103" FontWeight="Bold"/>
     </Grid>
 </Page>

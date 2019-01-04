@@ -1,0 +1,97 @@
+﻿<Page x:Class="WoodCutterCalculator.Views.CuttedStocks"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:WoodCutterCalculator.Views"
+      mc:Ignorable="d" 
+      d:DesignHeight="720" d:DesignWidth="1280"
+      Background="AntiqueWhite"
+      Title="CuttedStocks"
+      DataContext="{Binding Path=CuttedStocksViewModel,Source={StaticResource Locator}}">
+
+    <Grid>
+        <ItemsControl ItemsSource="{Binding FirstIteration }">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                    <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Image Source="{Binding Class}"/>
+                        <Border BorderBrush="{Binding BorderColor}" BorderThickness="0,0,2.5,0"/>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <ItemsControl ItemsSource="{Binding LastIteration}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                    <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Image Source="{Binding Class}"/>
+                        <Border BorderBrush="{Binding BorderColor}" BorderThickness="0,0,2.5,0"/>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <Canvas HorizontalAlignment="Left" Height="75" VerticalAlignment="Top" Width="1280">
+            <Label Content="Pierwsza iteracja" FontSize="50" Canvas.Left="69" RenderTransformOrigin="1.427,-0.234" Width="420" Height="75"/>
+            <Label Content="Ostatnia iteracja" FontSize="50" Canvas.Left="661" RenderTransformOrigin="1.427,-0.234" Width="420" Height="75"/>
+        </Canvas>
+        <Canvas Margin="1114,75,0,497">
+            <Label Content="Legenda" FontWeight="Bold" FontSize="18" Canvas.Left="43" Canvas.Top="10" RenderTransformOrigin="0.51,-0.172" Height="38" Width="91"/>
+            <Label Content="I klasa" FontSize="15" Canvas.Left="65" Canvas.Top="48" RenderTransformOrigin="0.51,-0.172" Height="26" Width="91"/>
+            <Label Content="II klasa" FontSize="15" Canvas.Left="65" Canvas.Top="78" RenderTransformOrigin="0.51,-0.172" Height="26" Width="91"/>
+            <Label Content="III klasa" FontSize="15" Canvas.Left="65" Canvas.Top="108" RenderTransformOrigin="0.51,-0.172" Height="26" Width="91"/>
+            <Image Canvas.Left="25" Canvas.Top="50" Source="images/Iclass.bmp"/>
+            <Image Canvas.Left="25" Canvas.Top="80" Source="images/IIclass.bmp"/>
+            <Image Canvas.Left="25" Canvas.Top="110" Source="images/IIIclass.bmp"/>
+        </Canvas>
+        <Canvas HorizontalAlignment="Left" Height="199" Margin="10,521,0,0" VerticalAlignment="Top" Width="1260">
+            <Label Content="{Binding ProfitAfterFirstIteration}" FontWeight="Bold" FontSize="20" Foreground="Red" Canvas.Left="185" Width="198" Height="52" Canvas.Top="25"/>
+            <Label Content="{Binding ProfitAfterLastIteration}" FontWeight="Bold" FontSize="20" Foreground="Red" Canvas.Left="785" Width="193" Height="52" Canvas.Top="25"/>
+            <TextBlock Text="{Binding CuttedStocksAfterFirstIteration[0], StringFormat={}I klasa - 20cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="25" Canvas.Top="64" Width="103" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterFirstIteration[1], StringFormat={}I klasa - 30cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="25" Canvas.Top="99" Width="104" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterFirstIteration[2], StringFormat={}I klasa - 40cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="25" Canvas.Top="129" Width="104" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterFirstIteration[3], StringFormat={}II klasa - 20cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="175" Canvas.Top="64" Width="103" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterFirstIteration[4], StringFormat={}II klasa - 30cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="175" Canvas.Top="99" Width="104" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterFirstIteration[5], StringFormat={}II klasa - 40cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="175" Canvas.Top="129" Width="104" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterFirstIteration[6], StringFormat={}III klasa - 20cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="325" Canvas.Top="64" Width="110" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterFirstIteration[7], StringFormat={}III klasa - 30cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="325" Canvas.Top="99" Width="110" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterFirstIteration[8], StringFormat={}III klasa - 40cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="325" Canvas.Top="129" Width="110" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterFirstIteration[9], StringFormat={}Odpad: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="475" Canvas.Top="99" Width="110" Height="30"/>
+
+            <TextBlock Text="{Binding CuttedStocksAfterLastIteration[0], StringFormat={}I klasa - 20cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="625" Canvas.Top="64" Width="103" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterLastIteration[1], StringFormat={}I klasa - 30cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="625" Canvas.Top="99" Width="104" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterLastIteration[2], StringFormat={}I klasa - 40cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="625" Canvas.Top="129" Width="104" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterLastIteration[3], StringFormat={}II klasa - 20cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="775" Canvas.Top="64" Width="103" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterLastIteration[4], StringFormat={}II klasa - 30cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="775" Canvas.Top="99" Width="104" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterLastIteration[5], StringFormat={}II klasa - 40cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="775" Canvas.Top="129" Width="104" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterLastIteration[6], StringFormat={}III klasa - 20cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="925" Canvas.Top="64" Width="110" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterLastIteration[7], StringFormat={}III klasa - 30cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="925" Canvas.Top="99" Width="110" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterLastIteration[8], StringFormat={}III klasa - 40cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="925" Canvas.Top="129" Width="110" Height="30"/>
+            <TextBlock Text="{Binding CuttedStocksAfterLastIteration[9], StringFormat={}Odpad: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="1075" Canvas.Top="99" Width="110" Height="30"/>
+            
+            <Button Command="{Binding GoBackToMenu}" Content="Powrót do menu" BorderBrush="AntiqueWhite" Foreground="AntiqueWhite" Background="AntiqueWhite" FontSize="12" Canvas.Left="1179" Canvas.Top="0"/>
+        </Canvas>
+    </Grid>
+</Page>

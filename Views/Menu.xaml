@@ -17,47 +17,53 @@
 
     <Grid>
         <Canvas>
-            <Button Command="{Binding GoToPlotsCommand}" Content="Show plots" Height="140" Canvas.Left="323" Canvas.Top="503" Width="598" Foreground="Black" FontSize="72"/>
-            <Button Command="{Binding StartCalculations}" Content="Start calculations" Height="140" Canvas.Left="323" Canvas.Top="346" Width="598" Foreground="Black" FontSize="72"/>
-            <Label Content="Please, place&#10;your order:" Foreground="Black" Height="91" Canvas.Left="47" Canvas.Top="33" Width="186" FontSize="30
+            <Button Command="{Binding GoToPlotsCommand}" Content="Wyniki i wykresy" Height="140" Canvas.Left="323" Canvas.Top="503" Width="598" Foreground="Black" FontSize="72"/>
+            <Button Command="{Binding StartCalculations}" Content="Rozpocznij kalkulację" Height="140" Canvas.Left="299" Canvas.Top="346" Width="686" Foreground="Black" FontSize="72"/>
+            <Label Content="Proszę, wprowadź&#10;swoje zamówienie:" Foreground="Black" Height="91" Canvas.Left="24" Canvas.Top="33" Width="258" FontSize="30
                    " RenderTransformOrigin="0.5,0.5" />
-            <Label Content="Please, place genetic &#xA;algorithm parameters:" Foreground="Black" Height="92" Canvas.Left="47" Canvas.Top="176" Width="209" FontSize="20" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="Proszę, wprowadź &#xA;pamatetry algorytmu:" Foreground="Black" Height="92" Canvas.Left="47" Canvas.Top="176" Width="209" FontSize="20" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding Parameters.NumberOfPlanksPerPack}" Canvas.Left="323" Canvas.Top="206" Height="31" Width="164" HorizontalContentAlignment="Center"/>
-            <Label Content="Number of planks &#xA;per pack" Foreground="Black" Height="51" Canvas.Left="348" Canvas.Top="149" Width="139" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="Liczba desek &#xA;w paczce" Foreground="Black" Height="51" Canvas.Left="348" Canvas.Top="149" Width="139" FontSize="16" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding Parameters.SizeOfPopulation}" Canvas.Left="520" Canvas.Top="206" Height="31" Width="164" HorizontalContentAlignment="Center"/>
-            <Label Content="Size of population" Foreground="Black" Height="30" Canvas.Left="542" Canvas.Top="170" Width="142" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="Wielkość populacji" Foreground="Black" Height="30" Canvas.Left="542" Canvas.Top="170" Width="142" FontSize="16" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding Parameters.NumberOfIterations}" Canvas.Left="707" Canvas.Top="206" Height="31" Width="164" HorizontalContentAlignment="Center"/>
-            <Label Content="Number of iterations" Foreground="Black" Height="30" Canvas.Left="714" Canvas.Top="171" Width="158" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="Liczba iteracji" Foreground="Black" Height="30" Canvas.Left="731" Canvas.Top="172" Width="118" FontSize="16" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding Parameters.MutationRate}" Canvas.Left="896" Canvas.Top="206" Height="31" Width="164" HorizontalContentAlignment="Center"/>
-            <Label Content="Mutation rate" Foreground="Black" Height="30" Canvas.Left="915" Canvas.Top="171" Width="158" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="Współczynnik mutacji" Foreground="Black" Height="30" Canvas.Left="896" Canvas.Top="171" Width="177" FontSize="16" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding Parameters.PercentageOfElite}" Canvas.Left="1084" Canvas.Top="205" Height="31" Width="164" HorizontalContentAlignment="Center"/>
-            <Label Content="Percentage of elite" Foreground="Black" Height="28" Canvas.Left="1084" Canvas.Top="172" Width="170" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="Elita" Foreground="Black" Height="28" Canvas.Left="1133" Canvas.Top="171" Width="64" FontSize="16" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding Parameters.LengthOfPlank}" Canvas.Left="323" Canvas.Top="300" Height="30" Width="164" HorizontalContentAlignment="Center"/>
-            <Label Content="Length of plank" Foreground="Black" Height="51" Canvas.Left="323" Canvas.Top="242" Width="139" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="Długość deski" Foreground="Black" Height="33" Canvas.Left="348" Canvas.Top="267" Width="139" FontSize="16" RenderTransformOrigin="0.544,1.642" />
             <TextBox Text="{Binding Parameters.PercentageOfParentsChosenToSelection}" Canvas.Left="685" Canvas.Top="300" Height="30" Width="164" HorizontalContentAlignment="Center"/>
-            <Label Content="Percentage of parents &#xA; chosen to selection" Foreground="Black" Height="52" Canvas.Left="685" Canvas.Top="243" Width="174" FontSize="16" RenderTransformOrigin="0.5,0.5" />
-            <Button Command="{Binding FillPlankWarehouse}" Content="Fill" Height="26" Canvas.Left="47" Canvas.Top="641" Width="100" Foreground="Black" FontSize="12"/>
+            <Label Content="Reproduktywne&#xA; osobniki" Foreground="Black" Height="52" Canvas.Left="722" Canvas.Top="243" Width="142" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <Button Command="{Binding FillPlankWarehouse}" Content="Generuj magazyn" Height="26" Canvas.Left="47" Canvas.Top="641" Width="100" Foreground="Black" FontSize="12"/>
             <TextBox Text="{Binding Parameters.PromotionRate}" Canvas.Left="1033" Canvas.Top="303" Height="30" Width="164" HorizontalContentAlignment="Center"/>
-            <Label Content="Promotion rate" Foreground="Black" Height="52" Canvas.Left="1033" Canvas.Top="246" Width="174" FontSize="16" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="Mnożnik premiujący" Foreground="Black" Height="48" Canvas.Left="1033" Canvas.Top="273" Width="174" FontSize="16" RenderTransformOrigin="0.5,0.5" />
 
             <TextBox Text="{Binding PlacedOrder[0]}" Canvas.Left="323" Canvas.Top="80" Height="18" Width="86" HorizontalContentAlignment="Center"/>
-            <Label Content="I class - 20cm" Foreground="Black" Height="32" Canvas.Left="323" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="I klasa - 20cm" Foreground="Black" Height="32" Canvas.Left="323" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding PlacedOrder[1]}" Canvas.Left="414" Canvas.Top="80" Height="18" Width="86" HorizontalContentAlignment="Center"/>
-            <Label Content="II class - 20cm" Foreground="Black" Height="32" Canvas.Left="414" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="I klasa - 30cm" Foreground="Black" Height="32" Canvas.Left="414" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding PlacedOrder[2]}" Canvas.Left="505" Canvas.Top="80" Height="18" Width="86" HorizontalContentAlignment="Center"/>
-            <Label Content="III class - 20cm" Foreground="Black" Height="32" Canvas.Left="506" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="I klasa - 40cm" Foreground="Black" Height="32" Canvas.Left="506" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding PlacedOrder[3]}" Canvas.Left="596" Canvas.Top="80" Height="18" Width="86" HorizontalContentAlignment="Center"/>
-            <Label Content="I class - 30cm" Foreground="Black" Height="32" Canvas.Left="596" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="II klasa - 20cm" Foreground="Black" Height="32" Canvas.Left="596" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding PlacedOrder[4]}" Canvas.Left="687" Canvas.Top="80" Height="18" Width="86" HorizontalContentAlignment="Center"/>
-            <Label Content="II class - 30cm" Foreground="Black" Height="32" Canvas.Left="687" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="II klasa - 30cm" Foreground="Black" Height="32" Canvas.Left="687" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding PlacedOrder[5]}" Canvas.Left="778" Canvas.Top="80" Height="18" Width="86" HorizontalContentAlignment="Center"/>
-            <Label Content="III class - 30cm" Foreground="Black" Height="32" Canvas.Left="778" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="II klasa - 40cm" Foreground="Black" Height="32" Canvas.Left="778" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding PlacedOrder[6]}" Canvas.Left="869" Canvas.Top="80" Height="18" Width="86" HorizontalContentAlignment="Center"/>
-            <Label Content="I class - 40cm" Foreground="Black" Height="32" Canvas.Left="869" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="III klasa - 20cm" Foreground="Black" Height="32" Canvas.Left="869" Canvas.Top="48" Width="102" FontSize="12" RenderTransformOrigin="0.5,0.5" />
             <TextBox Text="{Binding PlacedOrder[7]}" Canvas.Left="955" Canvas.Top="80" Height="18" Width="86" HorizontalContentAlignment="Center"/>
-            <Label Content="II class - 40cm" Foreground="Black" Height="32" Canvas.Left="955" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="3.578,0.656" />
+            <Label Content="III klasa - 30cm" Foreground="Black" Height="32" Canvas.Left="955" Canvas.Top="48" Width="92" FontSize="12" RenderTransformOrigin="3.578,0.656" />
             <TextBox Text="{Binding PlacedOrder[8]}" Canvas.Left="1046" Canvas.Top="80" Height="18" Width="86" HorizontalContentAlignment="Center"/>
-            <Label Content="III class - 40cm" Foreground="Black" Height="32" Canvas.Left="1046" Canvas.Top="48" Width="86" FontSize="12" RenderTransformOrigin="0.5,0.5" />
+            <Label Content="III klasa - 40cm" Foreground="Black" Height="32" Canvas.Left="1047" Canvas.Top="48" Width="101" FontSize="12" RenderTransformOrigin="0.5,0.5" />
+            <TextBox Text="{Binding SizeOfWarehouse}" Canvas.Left="80" Canvas.Top="610" Height="26" Width="35" HorizontalContentAlignment="Center"/>
+            <Label Content="Ilość desek" Foreground="Black" Height="23" Canvas.Left="67" Canvas.Top="582" Width="67" FontSize="10" RenderTransformOrigin="0.5,0.5" />
+            <Button Command="{Binding GoToPicturedStocks}" Content="Zobrazuj cięcie" Height="35" Canvas.Left="1047" Canvas.Top="641" Width="206" Foreground="Black" FontSize="20" RenderTransformOrigin="0.885,0.243"/>
+
+            <TextBox Text="{Binding IdOfOrderToPlot}" Canvas.Left="596" Canvas.Top="692" Height="18" Width="86" HorizontalContentAlignment="Center"/>
+            <Label Content="Numer zamówienia do przeliczenia" Foreground="Black" Height="23" Canvas.Left="562" Canvas.Top="660" Width="177" FontSize="10" RenderTransformOrigin="0.5,0.5" />
         </Canvas>
     </Grid>
 </Page>

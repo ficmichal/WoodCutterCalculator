@@ -19,10 +19,10 @@ namespace WoodCutterCalculator.Models.Stock
             _planksToCutRepository = planksToCutRepository;
         }
 
-        public StockWarehouseProcessor Create(GeneticAlgorithmParameters parameters)
+        public StockWarehouseProcessor Create(GeneticAlgorithmParameters parameters, int sizeOfWarehouse)
         {
             _parameters = parameters;
-            Planks = new int[100][];
+            Planks = new int[sizeOfWarehouse][];
 
             return this;
         }

@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using System.Collections.ObjectModel;
 using System.Linq;
 using WoodCutterCalculator.Models;
@@ -15,7 +16,11 @@ namespace WoodCutterCalculator.ViewModels
 
         private IFrameNavigationService _navigationService;
         private IAllPlotDatasRepository _allPlotDatasRepository;
+
+        private RelayCommand _goBackToMenu;
+
         private double _bestSolution;
+        private int _uselessStocks;
 
         #endregion
 
@@ -43,6 +48,39 @@ namespace WoodCutterCalculator.ViewModels
                 RaisePropertyChanged();
             }
         }
+
+        public int UselessStocks
+        {
+            get
+            {
+                return _uselessStocks;
+            }
+
+            set
+            {
+                if (_uselessStocks == value)
+                {
+                    return;
+                }
+
+                _uselessStocks = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public RelayCommand GoBackToMenu
+        {
+            get
+            {
+                return _goBackToMenu
+                    ?? (_goBackToMenu = new RelayCommand(
+                    () =>
+                    {
+                        _navigationService.NavigateTo("Menu", UsedAlgorithmParameters);
+                    }));
+            }
+        }
+
         #endregion
 
         #region Constructor
@@ -57,6 +95,7 @@ namespace WoodCutterCalculator.ViewModels
             StocksData = HistogramPlotter.Plot(allPlotDatas.HistogramData);
             UsedAlgorithmParameters = allPlotDatas.AlgorithmParameters;
             BestSolution = allPlotDatas.HistoryOfLearning.ToList().Max();
+            UselessStocks = allPlotDatas.HistogramData.CuttedStocks.Last();
 
             SavePlots(allPlotDatas);
         }

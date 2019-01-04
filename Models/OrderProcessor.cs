@@ -39,9 +39,10 @@ namespace WoodCutterCalculator.Models
             _planksToCutRepository = planksToCutRepository;
         }
 
-        public OrderProcessor Create(GeneticAlgorithmParameters algorithmParameters)
+        public OrderProcessor Create(GeneticAlgorithmParameters algorithmParameters, string idOfOrderToPlot = null)
         {
-            var lastAddedPlanksInTheWarehouse = _planksToCutRepository?.GetLastAdded();
+            var lastAddedPlanksInTheWarehouse = idOfOrderToPlot != null ? _planksToCutRepository.GetByOrderId(idOfOrderToPlot) ??
+                _planksToCutRepository?.GetLastAdded() : _planksToCutRepository?.GetLastAdded();
             _orderId = lastAddedPlanksInTheWarehouse?.OrderId;
             PlanksInTheWarehouse = lastAddedPlanksInTheWarehouse?.Planks;
 
@@ -56,14 +57,15 @@ namespace WoodCutterCalculator.Models
             return this;
         }
 
-        public AllPlotDatas Calculate(ICollection<int> placedOrder)
+        public AllPlotDatas Calculate(ICollection<int> placedOrder, bool picturedMode = false)
         {
             _recorderTimeOfAlgorithmExecuting.Start();
-            var numberOfBigPacks = 10;
+            var numberOfBigPacks = 1;
             var numberOfPlanksPerBigPack = PlanksInTheWarehouse.Length / numberOfBigPacks;
             var numberOfPlanksPerPack = _algorithmParameters.NumberOfPlanksPerPack;
             var countOfPlankPacks = numberOfPlanksPerBigPack / numberOfPlanksPerPack;
             int[] cuttedStocks = new int[placedOrder.Count];
+            StocksToPicture firstAndLastStocksToPictureIt = null;
 
             var placedOrderDictionary = FitnessUtils.ConvertPlacedOrderToDictionary(placedOrder.ToArray());
             for (int i = 0; i < numberOfBigPacks; i++)
@@ -80,24 +82,50 @@ namespace WoodCutterCalculator.Models
                 {
                     var plankPack = SplitBigPackToSmallPacks(plankBigPack, j, numberOfPlanksPerPack);
 
-                    //Main function - create, update population and calculate fitness. 
-                    var (theBestSolutionOfOnePack, theCuttedStocksOfOnePack) = CalculateOnePackOfPlanks(plankPack);
-
-                    //Add best solution of package to global best solution.
-                    BestSolution += theBestSolutionOfOnePack;
-                    cuttedStocks = theCuttedStocksOfOnePack.CuttedStocks.Values.ToArray();
-                    AllCuttedStocks.AddCuttedStocks(theCuttedStocksOfOnePack.CuttedStocks);
+                    //Main function - create, update population and calculate fitness.
+                    if (!picturedMode)
+                    {
+                        var (theBestSolutionOfOnePack, theCuttedStocksOfOnePack) = CalculateOnePackOfPlanks(plankPack);
+                        //Add best solution of package to global best solution.
+                        BestSolution += theBestSolutionOfOnePack;
+                        cuttedStocks = theCuttedStocksOfOnePack.CuttedStocks.Values.ToArray();
+                        AllCuttedStocks.AddCuttedStocks(theCuttedStocksOfOnePack.CuttedStocks);
+                    }
+                    else
+                    {
+                        var (theBestSolutionOfOnePack, theCuttedStocksOfOnePack, 
+                            firstAndLastStocksToPicture) = CalculateOnePackOfPlanksToPicturedIt(plankPack);
+                        //Add best solution of package to global best solution.
+                        BestSolution += theBestSolutionOfOnePack;
+                        cuttedStocks = theCuttedStocksOfOnePack.CuttedStocks.Values.ToArray();
+                        AllCuttedStocks.AddCuttedStocks(theCuttedStocksOfOnePack.CuttedStocks);
+                        firstAndLastStocksToPictureIt = firstAndLastStocksToPicture;
+                    }
                 }
             }
             _recorderTimeOfAlgorithmExecuting.Stop();
 
-            return new AllPlotDatas
+            if (!picturedMode)
             {
-                HistoryOfLearning = HistoryOfLearning,
-                OrderId = _orderId,
-                HistogramData = new HistogramData { OrderedStocks = placedOrder.ToArray(), CuttedStocks = AllCuttedStocks.ConvertDictionaryToArray() },
-                AlgorithmParameters = new AlgorithmParameters(_algorithmParameters, _recorderTimeOfAlgorithmExecuting.ElapsedMilliseconds)
-            };
+                return new AllPlotDatas
+                {
+                    HistoryOfLearning = HistoryOfLearning,
+                    OrderId = _orderId,
+                    HistogramData = new HistogramData { OrderedStocks = placedOrder.ToArray(), CuttedStocks = AllCuttedStocks.ConvertDictionaryToArray() },
+                    AlgorithmParameters = new AlgorithmParameters(_algorithmParameters, _recorderTimeOfAlgorithmExecuting.ElapsedMilliseconds)
+                };
+            }
+            else
+            {
+                return new PicturedDatas
+                {
+                    FirstAndLastStocksToPicture = firstAndLastStocksToPictureIt,
+                    HistoryOfLearning = HistoryOfLearning,
+                    OrderId = _orderId,
+                    HistogramData = new HistogramData { OrderedStocks = placedOrder.ToArray(), CuttedStocks = AllCuttedStocks.ConvertDictionaryToArray() },
+                    AlgorithmParameters = new AlgorithmParameters(_algorithmParameters, _recorderTimeOfAlgorithmExecuting.ElapsedMilliseconds)
+                };
+            }
         }
 
         private (double theBestSolutionOfOnePack, StockWarehouse theCuttedStocksOfOnePack) 
@@ -107,12 +135,12 @@ namespace WoodCutterCalculator.Models
             var population = new SpecimenPopulation(_algorithmParameters);
             //First iteration
             var firstIteration = FindBestSolutionInCurrentPopulation(population, packOfPlanks);
-            var theBestSolutionOfOnePack = firstIteration.bestSolutionOfOnePack;
+            var theBestSolutionOfOnePack = HistoryOfLearning[0] = firstIteration.bestSolutionOfOnePack;
             var theCuttedStocksOfOnePack = firstIteration.cuttedStocksOfOnePack;
 
             population.UpdatePopulation(firstIteration.specimenClassification);
 
-            for (int j = 0; j < numberOfIterations; j++)
+            for (int j = 1; j < numberOfIterations; j++)
             {
                 var (bestSolutionOfOnePack, cuttedStocksOfOnePack, specimenClassification) = 
                     FindBestSolutionInCurrentPopulation(population, packOfPlanks);
@@ -126,6 +154,41 @@ namespace WoodCutterCalculator.Models
                 population.UpdatePopulation(specimenClassification);
             }
             return (theBestSolutionOfOnePack, theCuttedStocksOfOnePack);
+        }
+
+        private (double theBestSolutionOfOnePack, StockWarehouse theCuttedStocksOfOnePack, StocksToPicture firstAndLastStocksToPicture)
+            CalculateOnePackOfPlanksToPicturedIt(int[][] packOfPlanks)
+        {
+            var numberOfIterations = _algorithmParameters.NumberOfIterations;
+            var population = new SpecimenPopulation(_algorithmParameters);
+            //First iteration
+            var firstIteration = FindBestSolutionInCurrentPopulation(population, packOfPlanks);
+            var theBestSolutionOfOnePack = HistoryOfLearning[0] = firstIteration.bestSolutionOfOnePack;
+            var theCuttedStocksOfOnePack = firstIteration.cuttedStocksOfOnePack;
+            var theBestSpecimen = population.SplitPopulationToSpecimens(firstIteration.specimenClassification.ElementAt(0).Value);
+            var firstAndLastStocksToPicture = new StocksToPicture(theBestSpecimen, packOfPlanks, 
+                theCuttedStocksOfOnePack.ConvertDictionaryToArray(), theBestSolutionOfOnePack);
+            population.UpdatePopulation(firstIteration.specimenClassification);
+
+            for (int j = 1; j < numberOfIterations; j++)
+            {
+                var (bestSolutionOfOnePack, cuttedStocksOfOnePack, specimenClassification) =
+                    FindBestSolutionInCurrentPopulation(population, packOfPlanks);
+                if (bestSolutionOfOnePack > theBestSolutionOfOnePack)
+                {
+                    theBestSolutionOfOnePack = bestSolutionOfOnePack;
+                    theCuttedStocksOfOnePack = cuttedStocksOfOnePack;
+                }
+                HistoryOfLearning[j] += bestSolutionOfOnePack;
+
+                if (j == numberOfIterations - 1)
+                {
+                    theBestSpecimen = population.SplitPopulationToSpecimens(firstIteration.specimenClassification.ElementAt(0).Value);
+                    firstAndLastStocksToPicture.Add(theBestSpecimen, theCuttedStocksOfOnePack.ConvertDictionaryToArray(), theBestSolutionOfOnePack);
+                }
+                population.UpdatePopulation(specimenClassification);
+            }
+            return (theBestSolutionOfOnePack, theCuttedStocksOfOnePack, firstAndLastStocksToPicture);
         }
 
         private (double bestSolutionOfOnePack, StockWarehouse cuttedStocksOfOnePack, SortedDictionary<double, int> specimenClassification) 

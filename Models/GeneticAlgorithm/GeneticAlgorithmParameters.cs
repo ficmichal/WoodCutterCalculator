@@ -172,5 +172,18 @@ namespace WoodCutterCalculator.Models.GeneticAlgorithm
         }
 
         #endregion
+
+        public GeneticAlgorithmParameters(int numberOfPlanksPerPack, int sizeOfPopulation, int numberOfIterations, double mutationRate,
+            double percentageOfElite, int lengthOfPlank, double percentageOfParentsChosenToSelection, double promotionRate)
+        {
+            NumberOfPlanksPerPack = numberOfPlanksPerPack;
+            SizeOfPopulation = sizeOfPopulation;
+            NumberOfIterations = numberOfIterations;
+            MutationRate = mutationRate;
+            PercentageOfElite = percentageOfElite;
+            LengthOfPlank = lengthOfPlank;
+            PercentageOfParentsChosenToSelection = percentageOfParentsChosenToSelection;
+            PromotionRate = promotionRate;
+        }
     }
 }

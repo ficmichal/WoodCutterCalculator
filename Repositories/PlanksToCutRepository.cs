@@ -37,6 +37,9 @@ namespace WoodCutterCalculator.Repositories
         public PlanksToCut GetLastAdded()
             => Collection.AsQueryable().OrderByDescending(x => x.StartedCuttingDay).FirstOrDefault();
 
+        public PlanksToCut GetByOrderId(string orderId)
+            => Collection.AsQueryable().Where(x => x.OrderId == orderId).FirstOrDefault();
+
         public async Task UpdateAsync(PlanksToCut entity)
             => await Collection.ReplaceOneAsync(e => e.Id == entity.Id, entity);
 

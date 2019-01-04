@@ -5,23 +5,23 @@ namespace WoodCutterCalculator.Models.Enums
     public enum StockDetailsEnum
     {
         //MultipleConst * MultipleMinorStockUnit + StockClassEnum
-        [Description("I klasa - 20cm")]
+        [Description("I - 20")]
         FirstClassStock20 = 10 * 4 + 1,
-        [Description("I klasa - 30cm")]
+        [Description("I - 30")]
         FirstClassStock30 = 10 * 6 + 1,
-        [Description("I klasa - 40cm")]
+        [Description("I - 40")]
         FirstClassStock40 = 10 * 8 + 1,
-        [Description("II klasa - 20cm")]
+        [Description("II - 20")]
         SecondClassStock20 = 10 * 4 + 2,
-        [Description("II klasa - 30cm")]
+        [Description("II - 30")]
         SecondClassStock30 = 10 * 6 + 2,
-        [Description("II klasa - 40cm")]
+        [Description("II - 40")]
         SecondClassStock40 = 10 * 8 + 2,
-        [Description("III klasa - 20cm")]
+        [Description("III - 20")]
         ThirdClassStock20 = 10 * 4 + 3,
-        [Description("III klasa - 30cm")]
+        [Description("III - 30")]
         ThirdClassStock30 = 10 * 6 + 3,
-        [Description("III klasa - 40cm")]
+        [Description("III - 40")]
         ThirdClassStock40 = 10 * 8 + 3,
         [Description("Odpad")]
         Useless = 0
