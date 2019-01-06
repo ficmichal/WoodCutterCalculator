@@ -29,7 +29,7 @@ namespace WoodCutterCalculator.Models
         public int[][] PlanksInTheWarehouse { get; set; }
         public double[] HistoryOfLearning { get; set; }
         public double BestSolution { get; set; }
-        public StockWarehouse AllCuttedStocks { get; set; } =  new StockWarehouse();
+        public StockWarehouse AllCuttedStocks { get; set; }
         public bool NeccesityOfChangeFitness { get; set; } = false;
         private IEnumerable<StockDetailsEnum> _classesOfNotEnoughCuttedStocks;
         private SortedDictionary<double, int> ActualSpecimenClassification = new SortedDictionary<double, int>(new DescendingComparer<double>());
@@ -54,13 +54,15 @@ namespace WoodCutterCalculator.Models
 
             _possibleCuttedStocks = DetailsOfStocks.Prices.Keys.ToList();
             _recorderTimeOfAlgorithmExecuting = new Stopwatch();
+            AllCuttedStocks = new StockWarehouse();
+
             return this;
         }
 
         public AllPlotDatas Calculate(ICollection<int> placedOrder, bool picturedMode = false)
         {
             _recorderTimeOfAlgorithmExecuting.Start();
-            var numberOfBigPacks = 10;
+            var numberOfBigPacks = !picturedMode ? 10 : 1;
             var numberOfPlanksPerBigPack = PlanksInTheWarehouse.Length / numberOfBigPacks;
             var numberOfPlanksPerPack = _algorithmParameters.NumberOfPlanksPerPack;
             var countOfPlankPacks = numberOfPlanksPerBigPack / numberOfPlanksPerPack;

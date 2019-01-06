@@ -114,7 +114,7 @@ namespace WoodCutterCalculator.ViewModels
             Data = Plotter.Plot(allPlotDatas.HistoryOfLearning);
             StocksData = HistogramPlotter.Plot(allPlotDatas.HistogramData);
             UsedAlgorithmParameters = allPlotDatas.AlgorithmParameters;
-            BestSolution = allPlotDatas.HistoryOfLearning.ToList().Max();
+            BestSolution = allPlotDatas.HistoryOfLearning.ToList().Max() / 100;
             UselessStocks = allPlotDatas.HistogramData.CuttedStocks.Last();
             CuttedPlanks = allPlotDatas.NumberOfCuttedPlanks;
 

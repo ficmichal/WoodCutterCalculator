@@ -230,5 +230,8 @@
     <Resource Include="Views\images\IIclass.bmp" />
     <Resource Include="Views\images\IIIclass.bmp" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Views\images\cut.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

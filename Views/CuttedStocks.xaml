@@ -57,14 +57,16 @@
             <Label Content="Pierwsza iteracja" FontSize="50" Canvas.Left="69" RenderTransformOrigin="1.427,-0.234" Width="420" Height="75"/>
             <Label Content="Ostatnia iteracja" FontSize="50" Canvas.Left="661" RenderTransformOrigin="1.427,-0.234" Width="420" Height="75"/>
         </Canvas>
-        <Canvas Margin="1114,75,0,497">
+        <Canvas Margin="1114,75,0,476">
             <Label Content="Legenda" FontWeight="Bold" FontSize="18" Canvas.Left="43" Canvas.Top="10" RenderTransformOrigin="0.51,-0.172" Height="38" Width="91"/>
             <Label Content="I klasa" FontSize="15" Canvas.Left="65" Canvas.Top="48" RenderTransformOrigin="0.51,-0.172" Height="26" Width="91"/>
             <Label Content="II klasa" FontSize="15" Canvas.Left="65" Canvas.Top="78" RenderTransformOrigin="0.51,-0.172" Height="26" Width="91"/>
             <Label Content="III klasa" FontSize="15" Canvas.Left="65" Canvas.Top="108" RenderTransformOrigin="0.51,-0.172" Height="26" Width="91"/>
+            <Label Content="Cięcie" FontSize="15" Canvas.Left="65" Canvas.Top="138" RenderTransformOrigin="0.51,-0.172" Height="31" Width="91"/>
             <Image Canvas.Left="25" Canvas.Top="50" Source="images/Iclass.bmp"/>
             <Image Canvas.Left="25" Canvas.Top="80" Source="images/IIclass.bmp"/>
             <Image Canvas.Left="25" Canvas.Top="110" Source="images/IIIclass.bmp"/>
+            <Image Canvas.Left="35" Canvas.Top="140" Source="images/cut.png"/>
         </Canvas>
         <Canvas HorizontalAlignment="Left" Height="199" Margin="10,521,0,0" VerticalAlignment="Top" Width="1260">
             <Label Content="{Binding ProfitAfterFirstIteration}" FontWeight="Bold" FontSize="20" Foreground="Red" Canvas.Left="185" Width="198" Height="52" Canvas.Top="25"/>
@@ -91,7 +93,7 @@
             <TextBlock Text="{Binding CuttedStocksAfterLastIteration[8], StringFormat={}III klasa - 40cm: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="925" Canvas.Top="129" Width="110" Height="30"/>
             <TextBlock Text="{Binding CuttedStocksAfterLastIteration[9], StringFormat={}Odpad: {0}}" FontWeight="Bold" FontSize="13" Foreground="Red" Canvas.Left="1075" Canvas.Top="99" Width="110" Height="30"/>
             
-            <Button Command="{Binding GoBackToMenu}" Content="Powrót do menu" BorderBrush="AntiqueWhite" Foreground="AntiqueWhite" Background="AntiqueWhite" FontSize="12" Canvas.Left="1179" Canvas.Top="0"/>
+            <Button Command="{Binding GoBackToMenu}" Content="Powrót do menu" BorderBrush="AntiqueWhite" Foreground="Black"  FontSize="12" Canvas.Left="1179" Canvas.Top="0"/>
         </Canvas>
     </Grid>
 </Page>

@@ -18,7 +18,7 @@ namespace WoodCutterCalculator.Models.Plotter
                 plotData.Add(new CollectionDataValue
                 {
                     XData = i + 1,
-                    YData = toPlotData[i]
+                    YData = toPlotData[i] / 100
                 });
             }
 

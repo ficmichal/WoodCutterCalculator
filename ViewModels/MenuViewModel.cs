@@ -158,7 +158,7 @@ namespace WoodCutterCalculator.ViewModels
                     ?? (_goToPicturedStocks = new RelayCommand(
                     () =>
                     {
-                        Result = _orderProcessor.Create(Parameters).Calculate(PlacedOrder, true);
+                        Result = _orderProcessor.Create(Parameters, IdOfOrderToPlot).Calculate(PlacedOrder, true);
                         _navigationService.NavigateTo("CuttedStocks", Result);
                     }));
             }

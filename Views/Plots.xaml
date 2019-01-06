@@ -25,11 +25,11 @@
     </Page.Resources>
     <Grid>
         <Canvas>
-            <Button Command="{Binding GoBackToMenu}" Content="Powrót do menu" BorderBrush="AntiqueWhite" Foreground="AntiqueWhite" Background="AntiqueWhite" FontSize="12" Canvas.Left="1179" Canvas.Top="533"/>
+            <Button Command="{Binding GoBackToMenu}" Content="Powrót do menu" BorderBrush="AntiqueWhite" Foreground="Black" FontSize="12" Canvas.Left="1155" Canvas.Top="674"/>
             <Label Content="Parametry algorytmu" FontSize="22" HorizontalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top" Height="46" Width="221" Canvas.Left="197" Canvas.Top="513"/>
         </Canvas>
         <oxy:Plot x:Name="fitnessFunction" 
-                  Title="Funkcja celu" 
+                  Title="Historia nauczania" 
                   Margin="10,10,646,278">
             <oxy:Plot.Axes>
                 <oxy:LinearAxis Title="Iteracje" 
@@ -38,7 +38,7 @@
                                 MinorGridlineStyle="None" 
                                 MinimumPadding="0" 
                                 MaximumPadding="0"/>
-                <oxy:LinearAxis Title="Zysk" 
+                <oxy:LinearAxis Title="Zysk (zł)" 
                                 Position="Left" 
                                 MajorGridlineStyle="Solid" 
                                 MinorGridlineStyle="None"
@@ -85,8 +85,7 @@
         <Label Content="{Binding UsedAlgorithmParameters.MutationRate}" HorizontalAlignment="Left" Margin="580,623,0,0" VerticalAlignment="Top" Height="27" Width="54"  FontWeight="Bold"/>
         <Label Content="Mnożnik premiujący:" HorizontalAlignment="Left" Margin="440,655,0,0" VerticalAlignment="Top" Height="27" Width="135"/>
         <Label Content="{Binding UsedAlgorithmParameters.PromotionRate}" HorizontalAlignment="Left" Margin="580,655,0,0" VerticalAlignment="Top" Height="27" Width="54"  FontWeight="Bold"/>
-        <Label Content="Największy zysk:" Foreground="Red" FontSize="18" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="189,447,0,0" VerticalAlignment="Top" Height="46" Width="221"/>
-        <Label Content="{Binding BestSolution}" Foreground="Red" FontSize="18" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="346,447,0,0" VerticalAlignment="Top" Height="46" Width="103" FontWeight="Bold"/>
+        <TextBlock Text="{Binding BestSolution, StringFormat={}Największy zysk: {0} zł}" Foreground="Red" FontSize="18" HorizontalAlignment="Left" Margin="189,447,0,0" VerticalAlignment="Top" Height="46" Width="285"/>
         <Label Content="Ilosć odpadu:" Foreground="Red" FontSize="18" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="871,447,0,0" VerticalAlignment="Top" Height="46" Width="221"/>
         <Label Content="{Binding UselessStocks}" Foreground="Red" FontSize="18" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="1028,447,0,0" VerticalAlignment="Top" Height="46" Width="103" FontWeight="Bold"/>
     </Grid>

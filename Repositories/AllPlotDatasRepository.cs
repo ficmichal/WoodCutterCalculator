@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,5 +40,8 @@ namespace WoodCutterCalculator.Repositories
                 HistoryOfLearning = predicatedOrders.Select(x => x.HistoryOfLearning).MultiAverage()
             };
         }
+
+        public AllPlotDatas GetByObjectId(ObjectId id)
+            => Collection.AsQueryable().Where(x => x.Id == id).FirstOrDefault();
     }
 }
